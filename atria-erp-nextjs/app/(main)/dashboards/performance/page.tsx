@@ -85,11 +85,6 @@ const mockSummaries: PerformanceSummary[] = [
   },
 ];
 
-export default function SocialSummaries() {
-  return (
-    <PerformanceDashboard
-      summaries={mockSummaries}
-      title="Dashboard Analytics por Vídeo/Post"
-    />
-  );
+export default function PerformancePage() {
+  return <PerformanceDashboard summaries={mockSummaries} />;
 }

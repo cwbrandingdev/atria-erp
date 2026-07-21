@@ -2,12 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
   Kanban,
   Calendar,
-  DollarSign,
   FileText,
   Settings,
   LogOut,
@@ -15,6 +14,7 @@ import {
   GalleryVerticalEndIcon,
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { authService } from "@/services";
 
 const menu = [
   {
@@ -37,10 +37,9 @@ const menu = [
     href: "",
     icon: GalleryVerticalEndIcon,
     children: [
-      { name: "Financeiro", href: "/financeiro/visao-geral" },
-      { name: "Criação", href: "/financeiro/entradas" },
-      { name: "Performance", href: "/financeiro/saidas" },
-      { name: "Insight", href: "/financeiro/saidas" },
+      { name: "Financeiro", href: "/dashboards/financeiro" },
+      { name: "Criação", href: "/dashboards/criacao" },
+      { name: "Performance", href: "/dashboards/performance" },
     ],
   },
   {
@@ -57,16 +56,22 @@ const menu = [
 
 export function Sidebar() {
   const pathname = usePathname();
-  const [openDropdown, setOpenDropdown] = useState<string | null>("Financeiro");
+  const router = useRouter();
+  const [openDropdown, setOpenDropdown] = useState<string | null>("Dashboards");
 
   const toggleDropdown = (name: string) => {
     setOpenDropdown((prev) => (prev === name ? null : name));
   };
 
+  async function handleLogout() {
+    await authService.logout();
+    router.push("/login");
+  }
+
   return (
-    <aside className="fixed left-0 top-0 flex h-screen w-72 flex-col bg-[#004C4C] px-6 py-8 text-white">
+    <aside className="fixed left-0 top-0 flex h-screen w-72 flex-col bg-[#013C3C] px-6 py-8 text-white">
       <div className="mb-8">
-        <h1 className="text-2xl font-bold tracking-tight">My Dashboard</h1>
+        <h1 className="text-2xl font-bold tracking-tight">ATRIA</h1>
         <span className="text-xs font-medium text-[#E8C39E]">Admin Panel</span>
       </div>
 
@@ -77,7 +82,8 @@ export function Sidebar() {
           const isOpen = openDropdown === item.name;
           const active =
             pathname === item.href ||
-            (hasChildren && item.children?.some((child) => child.href === pathname));
+            (hasChildren &&
+              item.children?.some((child) => child.href === pathname));
 
           if (hasChildren) {
             return (
@@ -87,7 +93,7 @@ export function Sidebar() {
                   onClick={() => toggleDropdown(item.name)}
                   className={`flex w-full items-center justify-between rounded-xl px-4 py-3 text-sm font-medium transition-colors ${
                     active
-                      ? "bg-[#E8C39E] text-[#004C4C]"
+                      ? "bg-[#E8C39E] text-[#013C3C]"
                       : "text-white/80 hover:bg-white/10 hover:text-white"
                   }`}
                 >
@@ -114,7 +120,7 @@ export function Sidebar() {
                           href={child.href}
                           className={`rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
                             childActive
-                              ? "bg-white/20 text-white font-semibold"
+                              ? "bg-white/20 font-semibold text-white"
                               : "text-white/70 hover:bg-white/10 hover:text-white"
                           }`}
                         >
@@ -134,7 +140,7 @@ export function Sidebar() {
               href={item.href}
               className={`flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors ${
                 active
-                  ? "bg-[#E8C39E] text-[#004C4C]"
+                  ? "bg-[#E8C39E] text-[#013C3C]"
                   : "text-white/80 hover:bg-white/10 hover:text-white"
               }`}
             >
@@ -150,7 +156,7 @@ export function Sidebar() {
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10 border border-white/20">
               <AvatarImage src="https://github.com/shadcn.png" alt="Avatar" />
-              <AvatarFallback className="bg-[#E8C39E] text-[#004C4C] font-semibold">
+              <AvatarFallback className="bg-[#E8C39E] font-semibold text-[#013C3C]">
                 TS
               </AvatarFallback>
             </Avatar>
@@ -163,6 +169,7 @@ export function Sidebar() {
 
           <button
             type="button"
+            onClick={handleLogout}
             className="rounded-lg p-2 text-white/70 transition-colors hover:bg-white/10 hover:text-white"
             aria-label="Sair"
           >

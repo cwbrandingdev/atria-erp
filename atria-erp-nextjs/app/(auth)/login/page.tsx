@@ -7,10 +7,10 @@ export default function LoginPage() {
       <div className="flex flex-col gap-4 p-6 md:p-10">
         <div className="flex justify-center gap-2 md:justify-start">
           <a href="#" className="flex items-center gap-2 font-medium">
-            <div className="flex size-6 items-center justify-center rounded-md bg-primary text-primary-foreground">
+            <div className="flex size-6 items-center justify-center rounded-md bg-[#013C3C] text-white">
               <GalleryVerticalEnd className="size-4" />
             </div>
-            ATRIA{" "}
+            ATRIA
           </a>
         </div>
         <div className="flex flex-1 items-center justify-center">
