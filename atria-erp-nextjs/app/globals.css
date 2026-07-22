@@ -49,22 +49,23 @@
 }
 
 :root {
-  --atria-primary: #013C3C;
+  --atria-primary: #004949;
   --atria-accent: #E8C39E;
+  --atria-base: #FFFFFF;
   --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
+  --foreground: oklch(0.22 0.04 180);
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
+  --card-foreground: oklch(0.22 0.04 180);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.22 0.04 180);
+  --primary: oklch(0.32 0.06 180);
+  --primary-foreground: oklch(0.98 0.01 90);
+  --secondary: oklch(0.96 0.01 90);
+  --secondary-foreground: oklch(0.32 0.06 180);
+  --muted: oklch(0.96 0.005 180);
+  --muted-foreground: oklch(0.5 0.02 180);
+  --accent: oklch(0.84 0.06 70);
+  --accent-foreground: oklch(0.32 0.06 180);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
@@ -75,12 +76,12 @@
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
+  --sidebar: oklch(0.32 0.06 180);
+  --sidebar-foreground: oklch(0.98 0.01 90);
+  --sidebar-primary: oklch(0.84 0.06 70);
+  --sidebar-primary-foreground: oklch(0.32 0.06 180);
+  --sidebar-accent: oklch(0.38 0.06 180);
+  --sidebar-accent-foreground: oklch(0.98 0.01 90);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
 }
@@ -128,5 +129,26 @@
   }
   html {
     @apply font-sans;
+  }
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .print-report-container,
+  .print-report-container * {
+    visibility: visible;
+  }
+
+  .print-report-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
   }
 }

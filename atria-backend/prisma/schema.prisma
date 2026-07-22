@@ -7,9 +7,424 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum RoleName {
+  ADMIN
+  MANAGER
+  USER
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        RoleName @unique
+  description String?
+  users       User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model User {
+  id              String                 @id @default(uuid())
+  email           String                 @unique
+  passwordHash    String
+  name            String
+  avatarUrl       String?
+  roleId          String
+  role            Role                   @relation(fields: [roleId], references: [id])
+  hourlyRate      Decimal?               @db.Decimal(10, 2)
+  authTokens      AuthToken[]
+  transactions    FinancialTransaction[]
+  eventsCreated   CalendarEvent[]        @relation("EventCreator")
+  eventsAssigned  CalendarEvent[]        @relation("EventAssignee")
+  kanbanTasksCreated KanbanTask[]        @relation("KanbanTaskCreator")
+  kanbanAssignments  KanbanTaskAssignee[]
+  timeLogs           TimeLog[]
+  taskComments       TaskComment[]
+  taskHistory        TaskHistory[]
+  contentPosts    ContentPost[]
+  assignedPosts   ContentPost[]          @relation("PostAssignee")
+  contractsCreated Contract[]            @relation("ContractCreator")
+  reportsGenerated ClientReport[]         @relation("ReportGenerator")
+  notifications    Notification[]
+  assetsUploaded   Asset[]                 @relation("AssetUploader")
+  createdAt       DateTime               @default(now())
+  updatedAt       DateTime               @updatedAt
+}
+
+model AuthToken {
+  id        String   @id @default(uuid())
+  tokenHash String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+}
+
 model Message {
   id        String   @id @default(uuid())
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum TransactionType {
+  INCOME
+  EXPENSE
+}
+
+enum TransactionStatus {
+  PAID
+  PENDING
+  OVERDUE
+}
+
+model FinancialCategory {
+  id           String                 @id @default(uuid())
+  name         String
+  type         TransactionType
+  color        String                 @default("#004949")
+  transactions FinancialTransaction[]
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+
+  @@unique([name, type])
+}
+
+model FinancialTransaction {
+  id          String            @id @default(uuid())
+  description String
+  amount      Decimal           @db.Decimal(12, 2)
+  type        TransactionType
+  status      TransactionStatus @default(PENDING)
+  date        DateTime
+  dueDate     DateTime?
+  categoryId  String
+  category    FinancialCategory @relation(fields: [categoryId], references: [id])
+  userId      String
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  contractId  String?
+  contract    Contract?         @relation(fields: [contractId], references: [id], onDelete: SetNull)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([userId, date])
+  @@index([userId, type])
+  @@index([userId, status])
+  @@index([contractId])
+}
+
+model TimeLog {
+  id                String     @id @default(uuid())
+  taskId            String
+  task              KanbanTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId            String
+  user              User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  startTime         DateTime
+  endTime           DateTime?
+  durationInSeconds Int?
+  notes             String?    @db.Text
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+
+  @@index([taskId])
+  @@index([userId])
+  @@index([userId, endTime])
+}
+
+enum EventCategory {
+  MEETING
+  DEADLINE
+  PUBLISH
+  OTHER
+}
+
+enum KanbanTaskPriority {
+  CRITICAL
+  HIGH
+  MEDIUM
+  LOW
+  PLANNED
+}
+
+model KanbanColumn {
+  id        String       @id @default(uuid())
+  title     String
+  order     Int          @default(0)
+  color     String       @default("#004949")
+  tasks     KanbanTask[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@index([order])
+}
+
+model KanbanTask {
+  id          String             @id @default(uuid())
+  title       String
+  description String?
+  priority    KanbanTaskPriority @default(MEDIUM)
+  order       Int                @default(0)
+  dueDate     DateTime?
+  clientId    String?
+  client      Client?            @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  columnId    String
+  column      KanbanColumn       @relation(fields: [columnId], references: [id], onDelete: Cascade)
+  createdById String
+  createdBy   User               @relation("KanbanTaskCreator", fields: [createdById], references: [id])
+  assignees   KanbanTaskAssignee[]
+  comments    TaskComment[]
+  history     TaskHistory[]
+  timeLogs    TimeLog[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  @@index([columnId, order])
+  @@index([clientId])
+}
+
+model KanbanTaskAssignee {
+  taskId String
+  userId String
+  task   KanbanTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([taskId, userId])
+  @@index([userId])
+}
+
+model TaskComment {
+  id        String     @id @default(uuid())
+  taskId    String
+  task      KanbanTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  content   String     @db.Text
+  createdAt DateTime   @default(now())
+
+  @@index([taskId, createdAt])
+}
+
+model TaskHistory {
+  id        String     @id @default(uuid())
+  taskId    String
+  task      KanbanTask @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  action    String
+  createdAt DateTime   @default(now())
+
+  @@index([taskId, createdAt])
+}
+
+model CalendarEvent {
+  id          String        @id @default(uuid())
+  title       String
+  description String?
+  startAt     DateTime
+  endAt       DateTime
+  category    EventCategory @default(MEETING)
+  color       String?
+  isPending   Boolean       @default(false)
+  createdById String
+  createdBy   User          @relation("EventCreator", fields: [createdById], references: [id])
+  assigneeId  String?
+  assignee    User?         @relation("EventAssignee", fields: [assigneeId], references: [id])
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([startAt])
+  @@index([assigneeId])
+}
+
+enum ContentPlatform {
+  INSTAGRAM
+  TIKTOK
+  YOUTUBE
+  LINKEDIN
+}
+
+enum ContentPostStatus {
+  DRAFT
+  PENDING_APPROVAL
+  SCHEDULED
+  PUBLISHED
+}
+
+enum ContentPostFormat {
+  CAROUSEL
+  REELS
+  STATIC
+  STORY
+}
+
+model Client {
+  id          String        @id @default(uuid())
+  companyName String
+  contactName String?
+  email       String?
+  phone       String?
+  instagram   String?
+  website     String?
+  street      String?
+  number      String?
+  city        String?
+  state       String?
+  zipCode     String?
+  notes       String?       @db.Text
+  avatarUrl   String?
+  posts       ContentPost[]
+  contracts   Contract[]
+  reports     ClientReport[]
+  portalToken ClientPortalToken?
+  kanbanTasks KanbanTask[]
+  assets      Asset[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([companyName])
+}
+
+model ClientReport {
+  id            String   @id @default(uuid())
+  clientId      String
+  client        Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  month         Int
+  year          Int
+  title         String
+  data          Json
+  generatedById String
+  generatedBy   User     @relation("ReportGenerator", fields: [generatedById], references: [id])
+  createdAt     DateTime @default(now())
+
+  @@unique([clientId, month, year])
+  @@index([clientId])
+}
+
+model ClientPortalToken {
+  id             String    @id @default(uuid())
+  clientId       String    @unique
+  client         Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  tokenHash      String    @unique
+  isActive       Boolean   @default(true)
+  expiresAt      DateTime?
+  lastAccessedAt DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+}
+
+model ContentPost {
+  id            String              @id @default(uuid())
+  title         String
+  platform      ContentPlatform
+  format        ContentPostFormat   @default(STATIC)
+  scheduledDate DateTime?
+  status        ContentPostStatus   @default(DRAFT)
+  copy          String              @db.Text
+  clientId      String
+  client        Client              @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  assigneeId    String?
+  assignee      User?               @relation("PostAssignee", fields: [assigneeId], references: [id])
+  attachments   ContentAttachment[]
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  @@index([platform])
+  @@index([status])
+  @@index([scheduledDate])
+  @@index([userId])
+  @@index([clientId])
+}
+
+model ContentAttachment {
+  id        String      @id @default(uuid())
+  postId    String
+  post      ContentPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  name      String
+  url       String
+  mimeType  String?
+  createdAt DateTime    @default(now())
+
+  @@index([postId])
+}
+
+enum ContractStatus {
+  DRAFT
+  SENT
+  SIGNED
+  EXPIRED
+  CANCELLED
+}
+
+enum PaymentFrequency {
+  MONTHLY
+  ONE_TIME
+}
+
+model Contract {
+  id               String             @id @default(uuid())
+  clientId         String
+  client           Client             @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  title            String
+  status           ContractStatus     @default(DRAFT)
+  recurringValue   Decimal            @db.Decimal(12, 2)
+  paymentFrequency PaymentFrequency   @default(MONTHLY)
+  startDate        DateTime
+  endDate          DateTime?
+  termsContent     String             @db.Text
+  pdfUrl           String?
+  createdById      String
+  createdBy        User               @relation("ContractCreator", fields: [createdById], references: [id])
+  transactions     FinancialTransaction[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  @@index([clientId])
+  @@index([status])
+  @@index([startDate])
+}
+
+enum AssetFileType {
+  IMAGE
+  LOGO
+  BRAND_GUIDE
+  DOCUMENT
+}
+
+model Asset {
+  id           String        @id @default(uuid())
+  clientId     String
+  client       Client        @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  fileName     String
+  fileType     AssetFileType @default(DOCUMENT)
+  fileUrl      String
+  fileSize     Int           @default(0)
+  uploadedById String?
+  uploadedBy   User?         @relation("AssetUploader", fields: [uploadedById], references: [id], onDelete: SetNull)
+  uploadedAt   DateTime      @default(now())
+
+  @@index([clientId])
+  @@index([fileType])
+}
+
+enum NotificationType {
+  TASK_ASSIGNED
+  CONTRACT_SIGNED
+  POST_PENDING
+}
+
+model Notification {
+  id        String           @id @default(uuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title     String
+  message   String           @db.Text
+  type      NotificationType
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  @@index([userId, isRead])
+  @@index([userId, createdAt])
 }

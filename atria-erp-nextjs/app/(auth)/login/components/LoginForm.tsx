@@ -1,30 +1,39 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/auth-context";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { authService, ApiError } from "@/services";
+import { ApiError } from "@/services";
+import { useState } from "react";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"form">) {
   const router = useRouter();
+  const { login, isAuthenticated, isLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      router.replace("/dashboard");
+    }
+  }, [isAuthenticated, isLoading, router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    setLoading(true);
+    setSubmitting(true);
 
     try {
-      await authService.login({ email, password });
+      await login({ email, password });
       router.push("/dashboard");
     } catch (err) {
       if (err instanceof ApiError) {
@@ -33,7 +42,7 @@ export function LoginForm({
         setError("Não foi possível fazer login. Tente novamente.");
       }
     } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   }
 
@@ -45,7 +54,7 @@ export function LoginForm({
     >
       <FieldGroup>
         <div className="flex flex-col items-center gap-1 text-center">
-          <h1 className="text-2xl font-bold text-[#013C3C]">
+          <h1 className="text-2xl font-bold text-[var(--atria-primary)]">
             Faça login na sua conta
           </h1>
           <p className="text-sm text-balance text-muted-foreground">
@@ -83,10 +92,10 @@ export function LoginForm({
         <Field>
           <Button
             type="submit"
-            disabled={loading}
-            className="bg-[#013C3C] text-white hover:bg-[#013C3C]/90"
+            disabled={submitting}
+            className="bg-[var(--atria-primary)] text-white hover:bg-[var(--atria-primary)]/90"
           >
-            {loading ? "Entrando..." : "Login"}
+            {submitting ? "Entrando..." : "Login"}
           </Button>
         </Field>
       </FieldGroup>
