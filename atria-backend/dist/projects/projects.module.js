@@ -6,25 +6,17 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.AppModule = void 0;
+exports.ProjectsModule = void 0;
 const common_1 = require("@nestjs/common");
-const config_1 = require("@nestjs/config");
-const message_module_1 = require("./message/message.module");
-const prisma_module_1 = require("./prisma/prisma.module");
-const projects_module_1 = require("./projects/projects.module");
-let AppModule = class AppModule {
+const projects_controller_1 = require("./projects.controller");
+const projects_service_1 = require("./projects.service");
+let ProjectsModule = class ProjectsModule {
 };
-exports.AppModule = AppModule;
-exports.AppModule = AppModule = __decorate([
+exports.ProjectsModule = ProjectsModule;
+exports.ProjectsModule = ProjectsModule = __decorate([
     (0, common_1.Module)({
-        imports: [
-            config_1.ConfigModule.forRoot({
-                isGlobal: true,
-            }),
-            prisma_module_1.PrismaModule,
-            message_module_1.MessageModule,
-            projects_module_1.ProjectsModule,
-        ],
+        controllers: [projects_controller_1.ProjectsController],
+        providers: [projects_service_1.ProjectsService],
     })
-], AppModule);
-//# sourceMappingURL=app.module.js.map
+], ProjectsModule);
+//# sourceMappingURL=projects.module.js.map
