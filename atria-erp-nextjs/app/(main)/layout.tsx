@@ -1,22 +1,14 @@
-import { Sidebar } from "@/components/ui/shared/sidebar";
+import { ProtectedRoute } from "@/components/auth/protected-route";
+import { AppShell } from "@/components/layout/app-shell";
 
-export default function DashboardLayout({
+export default function MainLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-[#F8F8F6]">
-      <Sidebar />
-
-      <main
-        className="
-ml-72
-p-8
-"
-      >
-        {children}
-      </main>
-    </div>
+    <ProtectedRoute>
+      <AppShell>{children}</AppShell>
+    </ProtectedRoute>
   );
 }

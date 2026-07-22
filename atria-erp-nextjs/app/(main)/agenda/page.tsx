@@ -1,9 +1,5 @@
-import Calendar from "./components/Calendar";
+import { redirect } from "next/navigation";
 
-export default function Agenda() {
-  return (
-    <div>
-      <Calendar />
-    </div>
-  );
+export default function AgendaRedirect() {
+  redirect("/calendar");
 }

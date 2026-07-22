@@ -1,0 +1,165 @@
+import { FinanceService } from '../finance/finance.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { PrismaService } from '../prisma/prisma.service';
+import { CreateContractDto, QueryContractsDto, UpdateContractDto } from './dto/contract.dto';
+export declare class ContractsService {
+    private readonly prisma;
+    private readonly financeService;
+    private readonly notifications;
+    constructor(prisma: PrismaService, financeService: FinanceService, notifications: NotificationsService);
+    findAll(query: QueryContractsDto): Promise<{
+        id: string;
+        clientId: string;
+        client: {
+            id: string;
+            companyName: string;
+            contactName: string | null;
+            email: string | null;
+            avatarUrl: string | null;
+        };
+        title: string;
+        status: "draft" | "sent" | "signed" | "expired" | "cancelled";
+        recurringValue: number;
+        paymentFrequency: "monthly" | "one_time";
+        startDate: string;
+        endDate: string | null;
+        termsContent: string;
+        pdfUrl: string | null;
+        createdBy: {
+            id: string;
+            avatarUrl: string | null;
+            name: string;
+        };
+        receivablesCount: number;
+        createdAt: string;
+        updatedAt: string;
+    }[]>;
+    findOne(id: string): Promise<{
+        id: string;
+        clientId: string;
+        client: {
+            id: string;
+            companyName: string;
+            contactName: string | null;
+            email: string | null;
+            avatarUrl: string | null;
+        };
+        title: string;
+        status: "draft" | "sent" | "signed" | "expired" | "cancelled";
+        recurringValue: number;
+        paymentFrequency: "monthly" | "one_time";
+        startDate: string;
+        endDate: string | null;
+        termsContent: string;
+        pdfUrl: string | null;
+        createdBy: {
+            id: string;
+            avatarUrl: string | null;
+            name: string;
+        };
+        receivablesCount: number;
+        createdAt: string;
+        updatedAt: string;
+    }>;
+    create(userId: string, dto: CreateContractDto): Promise<{
+        id: string;
+        clientId: string;
+        client: {
+            id: string;
+            companyName: string;
+            contactName: string | null;
+            email: string | null;
+            avatarUrl: string | null;
+        };
+        title: string;
+        status: "draft" | "sent" | "signed" | "expired" | "cancelled";
+        recurringValue: number;
+        paymentFrequency: "monthly" | "one_time";
+        startDate: string;
+        endDate: string | null;
+        termsContent: string;
+        pdfUrl: string | null;
+        createdBy: {
+            id: string;
+            avatarUrl: string | null;
+            name: string;
+        };
+        receivablesCount: number;
+        createdAt: string;
+        updatedAt: string;
+    }>;
+    update(id: string, dto: UpdateContractDto): Promise<{
+        id: string;
+        clientId: string;
+        client: {
+            id: string;
+            companyName: string;
+            contactName: string | null;
+            email: string | null;
+            avatarUrl: string | null;
+        };
+        title: string;
+        status: "draft" | "sent" | "signed" | "expired" | "cancelled";
+        recurringValue: number;
+        paymentFrequency: "monthly" | "one_time";
+        startDate: string;
+        endDate: string | null;
+        termsContent: string;
+        pdfUrl: string | null;
+        createdBy: {
+            id: string;
+            avatarUrl: string | null;
+            name: string;
+        };
+        receivablesCount: number;
+        createdAt: string;
+        updatedAt: string;
+    }>;
+    remove(id: string): Promise<void>;
+    signContract(userId: string, id: string): Promise<{
+        contract: {
+            id: string;
+            clientId: string;
+            client: {
+                id: string;
+                companyName: string;
+                contactName: string | null;
+                email: string | null;
+                avatarUrl: string | null;
+            };
+            title: string;
+            status: "draft" | "sent" | "signed" | "expired" | "cancelled";
+            recurringValue: number;
+            paymentFrequency: "monthly" | "one_time";
+            startDate: string;
+            endDate: string | null;
+            termsContent: string;
+            pdfUrl: string | null;
+            createdBy: {
+                id: string;
+                avatarUrl: string | null;
+                name: string;
+            };
+            receivablesCount: number;
+            createdAt: string;
+            updatedAt: string;
+        };
+        receivablesGenerated: number;
+        receivables: {
+            id: string;
+            description: string;
+            amount: number;
+            type: "income" | "expense";
+            status: "paid" | "pending" | "overdue";
+            date: string;
+            dueDate: string | null;
+            categoryId: string;
+            category: string;
+            categoryColor: string;
+            createdAt: string;
+        }[];
+    }>;
+    private ensureExists;
+    private ensureClientExists;
+    private toResponse;
+}
