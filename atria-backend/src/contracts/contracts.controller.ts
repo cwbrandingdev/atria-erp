@@ -31,11 +31,6 @@ export class ContractsController {
     return this.contractsService.findAll(query);
   }
 
-  @Get(':id/pdf')
-  getPdf(@Param('id') id: string) {
-    return this.contractsService.getContractPdf(id);
-  }
-
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.contractsService.findOne(id);

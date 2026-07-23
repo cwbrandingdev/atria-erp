@@ -11,7 +11,6 @@ const common_1 = require("@nestjs/common");
 const finance_module_1 = require("../finance/finance.module");
 const notifications_module_1 = require("../notifications/notifications.module");
 const contracts_controller_1 = require("./contracts.controller");
-const contracts_pdf_service_1 = require("./contracts-pdf.service");
 const contracts_service_1 = require("./contracts.service");
 let ContractsModule = class ContractsModule {
 };
@@ -20,7 +19,7 @@ exports.ContractsModule = ContractsModule = __decorate([
     (0, common_1.Module)({
         imports: [finance_module_1.FinanceModule, notifications_module_1.NotificationsModule],
         controllers: [contracts_controller_1.ContractsController],
-        providers: [contracts_service_1.ContractsService, contracts_pdf_service_1.ContractsPdfService],
+        providers: [contracts_service_1.ContractsService],
     })
 ], ContractsModule);
 //# sourceMappingURL=contracts.module.js.map

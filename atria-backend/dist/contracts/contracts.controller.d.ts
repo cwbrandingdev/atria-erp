@@ -8,10 +8,16 @@ export declare class ContractsController {
         id: string;
         clientId: string;
         client: {
+            number: string | null;
             id: string;
             companyName: string;
             contactName: string | null;
             email: string | null;
+            phone: string | null;
+            street: string | null;
+            city: string | null;
+            state: string | null;
+            zipCode: string | null;
             avatarUrl: string | null;
         };
         title: string;
@@ -24,6 +30,7 @@ export declare class ContractsController {
         pdfUrl: string | null;
         createdBy: {
             id: string;
+            email: string;
             avatarUrl: string | null;
             name: string;
         };
@@ -31,15 +38,20 @@ export declare class ContractsController {
         createdAt: string;
         updatedAt: string;
     }[]>;
-    getPdf(id: string): Promise<import("@nestjs/common").StreamableFile>;
     findOne(id: string): Promise<{
         id: string;
         clientId: string;
         client: {
+            number: string | null;
             id: string;
             companyName: string;
             contactName: string | null;
             email: string | null;
+            phone: string | null;
+            street: string | null;
+            city: string | null;
+            state: string | null;
+            zipCode: string | null;
             avatarUrl: string | null;
         };
         title: string;
@@ -52,6 +64,7 @@ export declare class ContractsController {
         pdfUrl: string | null;
         createdBy: {
             id: string;
+            email: string;
             avatarUrl: string | null;
             name: string;
         };
@@ -63,10 +76,16 @@ export declare class ContractsController {
         id: string;
         clientId: string;
         client: {
+            number: string | null;
             id: string;
             companyName: string;
             contactName: string | null;
             email: string | null;
+            phone: string | null;
+            street: string | null;
+            city: string | null;
+            state: string | null;
+            zipCode: string | null;
             avatarUrl: string | null;
         };
         title: string;
@@ -79,6 +98,7 @@ export declare class ContractsController {
         pdfUrl: string | null;
         createdBy: {
             id: string;
+            email: string;
             avatarUrl: string | null;
             name: string;
         };
@@ -90,10 +110,16 @@ export declare class ContractsController {
         id: string;
         clientId: string;
         client: {
+            number: string | null;
             id: string;
             companyName: string;
             contactName: string | null;
             email: string | null;
+            phone: string | null;
+            street: string | null;
+            city: string | null;
+            state: string | null;
+            zipCode: string | null;
             avatarUrl: string | null;
         };
         title: string;
@@ -106,6 +132,7 @@ export declare class ContractsController {
         pdfUrl: string | null;
         createdBy: {
             id: string;
+            email: string;
             avatarUrl: string | null;
             name: string;
         };
@@ -118,10 +145,16 @@ export declare class ContractsController {
             id: string;
             clientId: string;
             client: {
+                number: string | null;
                 id: string;
                 companyName: string;
                 contactName: string | null;
                 email: string | null;
+                phone: string | null;
+                street: string | null;
+                city: string | null;
+                state: string | null;
+                zipCode: string | null;
                 avatarUrl: string | null;
             };
             title: string;
@@ -134,6 +167,7 @@ export declare class ContractsController {
             pdfUrl: string | null;
             createdBy: {
                 id: string;
+                email: string;
                 avatarUrl: string | null;
                 name: string;
             };

@@ -2,15 +2,11 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
-  StreamableFile,
 } from '@nestjs/common';
-import { createReadStream, existsSync } from 'fs';
-import { join } from 'path';
 import { ContractStatus, Prisma } from '@prisma/client';
 import { FinanceService } from '../finance/finance.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
-import { ContractsPdfService } from './contracts-pdf.service';
 import {
   CreateContractDto,
   QueryContractsDto,
@@ -24,36 +20,23 @@ const contractInclude = {
       companyName: true,
       contactName: true,
       email: true,
-      avatarUrl: true,
-    },
-  },
-  createdBy: { select: { id: true, name: true, avatarUrl: true } },
-  _count: { select: { transactions: true } },
-} satisfies Prisma.ContractInclude;
-
-type ContractWithRelations = Prisma.ContractGetPayload<{
-  include: typeof contractInclude;
-}>;
-
-const pdfContractInclude = {
-  client: {
-    select: {
-      companyName: true,
-      contactName: true,
-      email: true,
       phone: true,
       street: true,
       number: true,
       city: true,
       state: true,
       zipCode: true,
+      avatarUrl: true,
     },
   },
-  createdBy: { select: { name: true, email: true } },
+  createdBy: {
+    select: { id: true, name: true, email: true, avatarUrl: true },
+  },
+  _count: { select: { transactions: true } },
 } satisfies Prisma.ContractInclude;
 
-type ContractForPdf = Prisma.ContractGetPayload<{
-  include: typeof pdfContractInclude;
+type ContractWithRelations = Prisma.ContractGetPayload<{
+  include: typeof contractInclude;
 }>;
 
 @Injectable()
@@ -62,7 +45,6 @@ export class ContractsService {
     private readonly prisma: PrismaService,
     private readonly financeService: FinanceService,
     private readonly notifications: NotificationsService,
-    private readonly pdfService: ContractsPdfService,
   ) {}
 
   async findAll(query: QueryContractsDto) {
@@ -81,29 +63,6 @@ export class ContractsService {
   async findOne(id: string) {
     const contract = await this.ensureExists(id);
     return this.toResponse(contract);
-  }
-
-  async getContractPdf(id: string) {
-    const contract = await this.ensureExistsForPdf(id);
-
-    if (contract.pdfUrl?.startsWith('/uploads/')) {
-      const filePath = join(process.cwd(), contract.pdfUrl.replace(/^\//, ''));
-      if (existsSync(filePath)) {
-        const filename = this.pdfService.buildFilename(contract);
-        return new StreamableFile(createReadStream(filePath), {
-          type: 'application/pdf',
-          disposition: `inline; filename="${filename}"`,
-        });
-      }
-    }
-
-    const buffer = await this.pdfService.generateBuffer(contract);
-    const filename = this.pdfService.buildFilename(contract);
-
-    return new StreamableFile(buffer, {
-      type: 'application/pdf',
-      disposition: `inline; filename="${filename}"`,
-    });
   }
 
   async create(userId: string, dto: CreateContractDto) {
@@ -218,16 +177,6 @@ export class ContractsService {
       receivablesGenerated: receivables.length,
       receivables,
     };
-  }
-
-  private async ensureExistsForPdf(id: string): Promise<ContractForPdf> {
-    const contract = await this.prisma.contract.findUnique({
-      where: { id },
-      include: pdfContractInclude,
-    });
-
-    if (!contract) throw new NotFoundException('Contract not found');
-    return contract;
   }
 
   private async ensureExists(id: string): Promise<ContractWithRelations> {
