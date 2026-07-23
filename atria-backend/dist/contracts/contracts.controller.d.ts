@@ -31,6 +31,7 @@ export declare class ContractsController {
         createdAt: string;
         updatedAt: string;
     }[]>;
+    getPdf(id: string): Promise<import("@nestjs/common").StreamableFile>;
     findOne(id: string): Promise<{
         id: string;
         clientId: string;

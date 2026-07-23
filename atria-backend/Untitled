@@ -1,1 +1,10 @@
-https://github.com/cwbrandingdev/atria-erpfreak
+DATABASE_URL="postgresql://neondb_owner:npg_qWRp93QOuAgm@ep-shy-sky-ac4broqn-pooler.sa-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require"
+
+JWT_ACCESS_SECRET="KZsjlevvU5ZVewuca4tOtG+i3RANVv4GgM6SQ14HPgxaNqD7y3W8pRCcyf3AOtn7"
+JWT_REFRESH_SECRET="OJG3HezGT5WcmYzea1lbjoaON0jsxTMjzvdH/MHNYHZdD4FqabxIP1R9IdV/vwyH"
+JWT_ACCESS_EXPIRATION="15m"
+JWT_REFRESH_EXPIRATION="7d"
+
+PORT=3001
+CORS_ORIGIN="http://localhost:3000"
+COMPANY_EMAIL_DOMAIN="atria.com"

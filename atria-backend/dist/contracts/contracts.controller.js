@@ -26,6 +26,9 @@ let ContractsController = class ContractsController {
     findAll(query) {
         return this.contractsService.findAll(query);
     }
+    getPdf(id) {
+        return this.contractsService.getContractPdf(id);
+    }
     findOne(id) {
         return this.contractsService.findOne(id);
     }
@@ -50,6 +53,13 @@ __decorate([
     __metadata("design:paramtypes", [contract_dto_1.QueryContractsDto]),
     __metadata("design:returntype", void 0)
 ], ContractsController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)(':id/pdf'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ContractsController.prototype, "getPdf", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),

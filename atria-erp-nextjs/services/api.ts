@@ -117,6 +117,56 @@ export async function apiRequest<T>(
   return data as T;
 }
 
+export async function apiRequestBlob(
+  endpoint: string,
+  options: Omit<RequestOptions, "body"> = {},
+): Promise<Blob> {
+  const { headers, skipAuth, skipToast, ...rest } = options;
+
+  const makeRequest = async (token: string | null) => {
+    return fetch(`${API_BASE_URL}${endpoint}`, {
+      ...rest,
+      credentials: "include",
+      headers: {
+        ...(token && !skipAuth ? { Authorization: `Bearer ${token}` } : {}),
+        ...headers,
+      },
+    });
+  };
+
+  let token = skipAuth ? null : getAccessToken();
+  let response = await makeRequest(token);
+
+  if (response.status === 401 && !skipAuth) {
+    const newToken = await refreshAccessToken();
+    if (newToken) {
+      token = newToken;
+      response = await makeRequest(token);
+    } else {
+      clearAuthStorage();
+    }
+  }
+
+  if (!response.ok) {
+    const data = await response.json().catch(() => null);
+    const message =
+      (data as { message?: string | string[] })?.message ?? "Request failed";
+    const error = new ApiError(
+      Array.isArray(message) ? message.join(", ") : message,
+      response.status,
+      data,
+    );
+
+    if (!skipToast && shouldShowApiErrorToast(response.status, endpoint)) {
+      showApiError(error, endpoint);
+    }
+
+    throw error;
+  }
+
+  return response.blob();
+}
+
 export async function uploadFile<T>(
   endpoint: string,
   formData: FormData,
