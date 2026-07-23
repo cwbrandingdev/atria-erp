@@ -3,7 +3,7 @@ import { CreateClientDto, UpdateClientDto } from './dto/client.dto';
 export declare class ClientsController {
     private readonly clientsService;
     constructor(clientsService: ClientsService);
-    findAll(): Promise<{
+    findAll(clientGroupId?: string): Promise<{
         id: string;
         companyName: string;
         contactName: string | null;
@@ -19,6 +19,12 @@ export declare class ClientsController {
         address: string | null;
         notes: string | null;
         avatarUrl: string | null;
+        clientGroup: {
+            id: string;
+            name: string;
+            description: string | null;
+            color: string;
+        } | null;
         postCount: number;
         createdAt: string;
         updatedAt: string;
@@ -39,6 +45,12 @@ export declare class ClientsController {
         address: string | null;
         notes: string | null;
         avatarUrl: string | null;
+        clientGroup: {
+            id: string;
+            name: string;
+            description: string | null;
+            color: string;
+        } | null;
         postCount: number;
         createdAt: string;
         updatedAt: string;
@@ -59,6 +71,12 @@ export declare class ClientsController {
         address: string | null;
         notes: string | null;
         avatarUrl: string | null;
+        clientGroup: {
+            id: string;
+            name: string;
+            description: string | null;
+            color: string;
+        } | null;
         postCount: number;
         createdAt: string;
         updatedAt: string;
@@ -79,6 +97,12 @@ export declare class ClientsController {
         address: string | null;
         notes: string | null;
         avatarUrl: string | null;
+        clientGroup: {
+            id: string;
+            name: string;
+            description: string | null;
+            color: string;
+        } | null;
         postCount: number;
         createdAt: string;
         updatedAt: string;

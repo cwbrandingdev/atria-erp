@@ -1,6 +1,7 @@
 "use client";
 
-import { LogOut, MoreVertical } from "lucide-react";
+import { LogOut, MoreVertical, Palette, Settings, User } from "lucide-react";
+import Link from "next/link";
 import { useAuth } from "@/contexts/auth-context";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -24,7 +25,12 @@ function getInitials(name: string) {
 }
 
 function formatRole(role: string) {
-  return role.charAt(0) + role.slice(1).toLowerCase();
+  const labels: Record<string, string> = {
+    admin: "Administrador",
+    manager: "Gestor",
+    user: "Usuário",
+  };
+  return labels[role.toLowerCase()] ?? role.charAt(0).toUpperCase() + role.slice(1);
 }
 
 interface SidebarUserProfileProps {
@@ -44,60 +50,79 @@ export function SidebarUserProfile({
   }
 
   return (
-    <div
-      className={cn(
-        "border-t border-white/10 bg-[#003838] p-4",
-        className,
-      )}
-    >
-      <div className="flex items-center gap-3 rounded-xl bg-white/5 p-3">
-        <Avatar className="size-10 border border-[var(--atria-accent)]/40">
-          {user?.avatarUrl && (
-            <AvatarImage src={user.avatarUrl} alt={user.name} />
-          )}
-          <AvatarFallback className="bg-[var(--atria-accent)] font-semibold text-[var(--atria-primary)]">
-            {user ? getInitials(user.name) : "?"}
-          </AvatarFallback>
-        </Avatar>
+    <div className={cn("shrink-0 p-3", className)}>
+      <div className="rounded-xl border border-white/10 bg-white/5 p-3 shadow-lg shadow-black/10 backdrop-blur-sm">
+        <div className="flex items-center gap-3">
+          <div className="relative shrink-0">
+            <Avatar className="size-10 border border-white/15 ring-2 ring-[#E8C39E]/20">
+              {user?.avatarUrl && (
+                <AvatarImage src={user.avatarUrl} alt={user.name} />
+              )}
+              <AvatarFallback className="bg-[#E8C39E]/90 text-xs font-bold text-[#004949]">
+                {user ? getInitials(user.name) : "?"}
+              </AvatarFallback>
+            </Avatar>
+            <span className="absolute bottom-0 right-0 size-2.5 rounded-full border-2 border-[#003838] bg-emerald-400" />
+          </div>
 
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-semibold text-white">
-            {user?.name ?? "Usuário"}
-          </p>
-          <p className="truncate text-xs text-[var(--atria-accent)]">
-            {user?.role ? formatRole(user.role) : "Membro"}
-          </p>
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-sm font-semibold text-white">
+              {user?.name ?? "Usuário"}
+            </p>
+            <p className="truncate text-[11px] text-white/45">
+              {user?.role ? formatRole(user.role) : "Membro"}
+            </p>
+          </div>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon-sm"
+                  className="shrink-0 text-white/50 hover:bg-white/10 hover:text-white"
+                  aria-label="Opções do usuário"
+                />
+              }
+            >
+              <MoreVertical className="size-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-52">
+              <DropdownMenuLabel>
+                <div className="flex flex-col gap-0.5">
+                  <span className="font-medium">{user?.name}</span>
+                  <span className="text-xs font-normal text-muted-foreground">
+                    {user?.email}
+                  </span>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                render={<Link href="/settings/users" onClick={onAction} />}
+              >
+                <User className="size-4" />
+                Perfil
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                render={<Link href="/settings/appearance" onClick={onAction} />}
+              >
+                <Palette className="size-4" />
+                Personalizar tema
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                render={<Link href="/settings" onClick={onAction} />}
+              >
+                <Settings className="size-4" />
+                Configurações
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => void handleLogout()}>
+                <LogOut className="size-4" />
+                Sair
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
-
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={
-              <Button
-                variant="ghost"
-                size="icon-sm"
-                className="shrink-0 text-white/70 hover:bg-white/10 hover:text-white"
-                aria-label="Opções do usuário"
-              />
-            }
-          >
-            <MoreVertical className="size-4" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-52">
-            <DropdownMenuLabel>
-              <div className="flex flex-col">
-                <span>{user?.name}</span>
-                <span className="text-xs font-normal text-muted-foreground">
-                  {user?.email}
-                </span>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => void handleLogout()}>
-              <LogOut className="size-4" />
-              Sair
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
       </div>
     </div>
   );

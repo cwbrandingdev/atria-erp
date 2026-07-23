@@ -1,4 +1,4 @@
-import type { KanbanPriority } from "@/services/types";
+import type { KanbanColumnType, KanbanPriority } from "@/services/types";
 
 export const PRIORITY_LABELS: Record<KanbanPriority, string> = {
   critical: "Crítica",
@@ -21,7 +21,7 @@ export const PRIORITY_CARD_STYLES: Record<KanbanPriority, string> = {
   high: "bg-orange-50 border-orange-200/60",
   medium: "bg-amber-50 border-amber-200/60",
   low: "bg-teal-50 border-teal-200/60",
-  planned: "bg-slate-50 border-slate-200/60",
+  planned: "bg-violet-50 border-violet-200/60",
 };
 
 export function getInitials(name: string) {
@@ -31,4 +31,16 @@ export function getInitials(name: string) {
     .slice(0, 2)
     .join("")
     .toUpperCase();
+}
+
+const COLUMN_TYPE_LABELS: Record<KanbanColumnType, string> = {
+  to_do: "A fazer",
+  in_progress: "Em andamento",
+  done: "Concluído",
+  custom: "Personalizada",
+};
+
+export function getColumnTypeLabel(type: KanbanColumnType | null): string | null {
+  if (!type || type === "custom") return null;
+  return COLUMN_TYPE_LABELS[type];
 }

@@ -6,6 +6,72 @@ export interface User {
   avatarUrl?: string;
 }
 
+export type UserRole = "admin" | "manager" | "user";
+
+export interface UserGroup {
+  id: string;
+  name: string;
+  description: string | null;
+  color: string;
+  userCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ManagedUser {
+  id: string;
+  name: string;
+  email: string;
+  role: UserRole;
+  avatarUrl: string | null;
+  hourlyRate: number | null;
+  mustChangePassword: boolean;
+  userGroup: Pick<UserGroup, "id" | "name" | "description" | "color"> | null;
+  createdAt: string;
+}
+
+export interface ProvisionUserInput {
+  name: string;
+  role: "ADMIN" | "MANAGER" | "USER";
+  userGroupId?: string;
+  hourlyRate?: number;
+  emailDomain?: string;
+}
+
+export interface ProvisionUserResult {
+  user: ManagedUser;
+  credentials: {
+    email: string;
+    temporaryPassword: string;
+  };
+}
+
+export interface CreateUserGroupInput {
+  name: string;
+  description?: string;
+  color?: string;
+}
+
+export interface UpdateUserGroupInput extends Partial<CreateUserGroupInput> {}
+
+export interface ClientGroup {
+  id: string;
+  name: string;
+  description: string | null;
+  color: string;
+  clientCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateClientGroupInput {
+  name: string;
+  description?: string;
+  color?: string;
+}
+
+export interface UpdateClientGroupInput extends Partial<CreateClientGroupInput> {}
+
 export interface LoginCredentials {
   email: string;
   password: string;
@@ -55,11 +121,18 @@ export type KanbanPriority =
   | "low"
   | "planned";
 
+export type KanbanColumnType =
+  | "to_do"
+  | "in_progress"
+  | "done"
+  | "custom";
+
 export interface KanbanColumn {
   id: string;
   title: string;
   order: number;
   color: string;
+  type: KanbanColumnType | null;
 }
 
 export interface KanbanTask {
@@ -248,6 +321,7 @@ export interface Client {
   address: string | null;
   notes: string | null;
   avatarUrl: string | null;
+  clientGroup: Pick<ClientGroup, "id" | "name" | "description" | "color"> | null;
   postCount: number;
   createdAt: string;
   updatedAt: string;
@@ -267,6 +341,7 @@ export interface CreateClientInput {
   zipCode?: string;
   notes?: string;
   avatarUrl?: string;
+  clientGroupId?: string;
 }
 
 export interface UpdateClientInput extends Partial<CreateClientInput> {}

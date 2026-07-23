@@ -17,10 +17,12 @@ let ClientsService = class ClientsService {
     constructor(prisma) {
         this.prisma = prisma;
     }
-    async findAll() {
+    async findAll(clientGroupId) {
         const clients = await this.prisma.client.findMany({
+            where: clientGroupId ? { clientGroupId } : undefined,
             orderBy: { companyName: 'asc' },
             include: {
+                clientGroup: true,
                 _count: { select: { posts: true } },
             },
         });
@@ -31,14 +33,30 @@ let ClientsService = class ClientsService {
         return this.toClientResponse(client);
     }
     async create(dto) {
-        const client = await this.prisma.client.create({ data: dto });
+        if (dto.clientGroupId) {
+            await this.ensureClientGroupExists(dto.clientGroupId);
+        }
+        const client = await this.prisma.client.create({
+            data: dto,
+            include: {
+                clientGroup: true,
+                _count: { select: { posts: true } },
+            },
+        });
         return this.toClientResponse(client);
     }
     async update(id, dto) {
         await this.ensureClientExists(id);
+        if (dto.clientGroupId) {
+            await this.ensureClientGroupExists(dto.clientGroupId);
+        }
         const client = await this.prisma.client.update({
             where: { id },
             data: dto,
+            include: {
+                clientGroup: true,
+                _count: { select: { posts: true } },
+            },
         });
         return this.toClientResponse(client);
     }
@@ -49,11 +67,19 @@ let ClientsService = class ClientsService {
     async ensureClientExists(id) {
         const client = await this.prisma.client.findUnique({
             where: { id },
-            include: { _count: { select: { posts: true } } },
+            include: {
+                clientGroup: true,
+                _count: { select: { posts: true } },
+            },
         });
         if (!client)
             throw new common_1.NotFoundException('Client not found');
         return client;
+    }
+    async ensureClientGroupExists(id) {
+        const group = await this.prisma.clientGroup.findUnique({ where: { id } });
+        if (!group)
+            throw new common_1.NotFoundException('Client group not found');
     }
     toClientResponse(client) {
         const address = [client.street, client.number, client.city, client.state, client.zipCode]
@@ -75,6 +101,14 @@ let ClientsService = class ClientsService {
             address: address || null,
             notes: client.notes,
             avatarUrl: client.avatarUrl,
+            clientGroup: client.clientGroup
+                ? {
+                    id: client.clientGroup.id,
+                    name: client.clientGroup.name,
+                    description: client.clientGroup.description,
+                    color: client.clientGroup.color,
+                }
+                : null,
             postCount: client._count?.posts ?? 0,
             createdAt: client.createdAt.toISOString(),
             updatedAt: client.updatedAt.toISOString(),

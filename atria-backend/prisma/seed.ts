@@ -9,6 +9,7 @@ import {
   PrismaClient,
   TransactionType,
 } from '@prisma/client';
+import { DEFAULT_KANBAN_COLUMNS } from '../src/kanban/kanban-defaults';
 
 const prisma = new PrismaClient();
 
@@ -170,28 +171,19 @@ async function main() {
 
     const columnCount = await prisma.kanbanColumn.count();
     if (columnCount === 0) {
-      const columns = await Promise.all([
-        prisma.kanbanColumn.create({
-          data: { title: 'Backlog', order: 0, color: '#E8C39E' },
-        }),
-        prisma.kanbanColumn.create({
-          data: { title: 'Em Progresso', order: 1, color: '#004949' },
-        }),
-        prisma.kanbanColumn.create({
-          data: { title: 'Revisão', order: 2, color: '#2D6A4F' },
-        }),
-        prisma.kanbanColumn.create({
-          data: { title: 'Concluído', order: 3, color: '#6C757D' },
-        }),
-      ]);
+      const columns = await Promise.all(
+        DEFAULT_KANBAN_COLUMNS.map((column) =>
+          prisma.kanbanColumn.create({ data: { ...column } }),
+        ),
+      );
 
-      const [backlog, inProgress, review, done] = columns;
+      const [todo, inProgress, done] = columns;
 
       const tasks = [
         {
           title: 'Briefing Cliente X',
           description: 'Revisar documento de briefing',
-          columnId: backlog.id,
+          columnId: todo.id,
           priority: KanbanTaskPriority.CRITICAL,
           order: 0,
           createdById: admin.id,
@@ -199,7 +191,7 @@ async function main() {
         {
           title: 'Roteiro Reels',
           description: 'Criar roteiro para campanha de verão',
-          columnId: backlog.id,
+          columnId: todo.id,
           priority: KanbanTaskPriority.PLANNED,
           order: 1,
           createdById: admin.id,
@@ -215,9 +207,9 @@ async function main() {
         {
           title: 'Vídeo TikTok',
           description: 'Aguardando aprovação do cliente',
-          columnId: review.id,
+          columnId: inProgress.id,
           priority: KanbanTaskPriority.HIGH,
-          order: 0,
+          order: 1,
           createdById: admin.id,
         },
         {

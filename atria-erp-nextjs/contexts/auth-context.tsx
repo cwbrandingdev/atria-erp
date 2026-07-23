@@ -17,6 +17,7 @@ import {
   setStoredUser,
 } from "@/lib/auth-storage";
 import { apiRequest } from "@/services/api";
+import { toast } from "@/lib/toast";
 import type { AuthResponse, LoginCredentials, User } from "@/services/types";
 
 interface AuthContextValue {
@@ -102,6 +103,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       clearAuthStorage();
       setToken(null);
       setUser(null);
+      toast.success("Sessão encerrada com sucesso");
       router.push("/login");
     }
   }, [router]);

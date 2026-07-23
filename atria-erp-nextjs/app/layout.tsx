@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { AuthProvider } from "@/contexts/auth-context";
+import { AppearanceProvider } from "@/contexts/appearance-context";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 const inter = Inter({
@@ -24,7 +26,12 @@ export default function RootLayout({
       className={`${inter.variable} ${inter.className} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <AppearanceProvider>
+            {children}
+            <Toaster />
+          </AppearanceProvider>
+        </AuthProvider>
       </body>
     </html>
   );

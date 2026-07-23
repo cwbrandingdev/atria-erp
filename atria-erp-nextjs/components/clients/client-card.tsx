@@ -6,6 +6,7 @@ import { AtSign, MapPin, PenLine, Phone, Pencil } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { GroupBadge } from "@/components/ui/group-badge";
 import { ClientFormDialog } from "@/components/clients/client-form-dialog";
 import type { Client } from "@/services/types";
 
@@ -47,6 +48,14 @@ export function ClientCard({ client, onUpdate }: ClientCardProps) {
                 <p className="text-xs text-[var(--atria-primary)]/50">
                   {client.contactName}
                 </p>
+              )}
+              {client.clientGroup && (
+                <div className="mt-1.5">
+                  <GroupBadge
+                    name={client.clientGroup.name}
+                    color={client.clientGroup.color}
+                  />
+                </div>
               )}
             </div>
           </div>

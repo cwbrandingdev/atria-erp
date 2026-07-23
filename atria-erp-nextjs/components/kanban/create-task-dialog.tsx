@@ -14,6 +14,7 @@ import {
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { PRIORITY_LABELS } from "@/lib/kanban-utils";
+import { toast } from "@/lib/toast";
 import { calendarService, clientsService, kanbanService, ApiError } from "@/services";
 import type { Client, KanbanColumn, KanbanPriority, TeamMember } from "@/services/types";
 
@@ -85,12 +86,11 @@ export function CreateTaskDialog({
       resetForm();
       setOpen(false);
       onSuccess();
+      toast.success("Tarefa criada com sucesso");
     } catch (err) {
-      setError(
-        err instanceof ApiError
-          ? err.message
-          : "Não foi possível criar a tarefa.",
-      );
+      if (!(err instanceof ApiError)) {
+        setError("Não foi possível criar a tarefa.");
+      }
     } finally {
       setLoading(false);
     }

@@ -3,24 +3,27 @@
 import { useCallback, useEffect, useState } from "react";
 import { ClientCard } from "@/components/clients/client-card";
 import { ClientFormDialog } from "@/components/clients/client-form-dialog";
+import { ClientGroupFilter } from "@/components/clients/client-group-filter";
+import { ClientGroupsManager } from "@/components/clients/client-groups-manager";
 import { clientsService } from "@/services";
 import type { Client } from "@/services/types";
 
 export default function ClientsPage() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
+  const [groupFilter, setGroupFilter] = useState("");
 
   const loadClients = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await clientsService.getClients();
+      const data = await clientsService.getClients(groupFilter || undefined);
       setClients(data);
     } catch {
       setClients([]);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [groupFilter]);
 
   useEffect(() => {
     void loadClients();
@@ -45,8 +48,13 @@ export default function ClientsPage() {
             Gerencie clientes e conecte com a criação de conteúdo
           </p>
         </div>
-        <ClientFormDialog onSuccess={() => void loadClients()} />
+        <div className="flex flex-wrap items-center gap-2">
+          <ClientGroupsManager onChange={() => void loadClients()} />
+          <ClientFormDialog onSuccess={() => void loadClients()} />
+        </div>
       </div>
+
+      <ClientGroupFilter value={groupFilter} onChange={setGroupFilter} />
 
       {clients.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-[var(--atria-primary)]/20 p-12 text-center">

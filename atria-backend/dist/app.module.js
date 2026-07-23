@@ -12,6 +12,7 @@ const config_1 = require("@nestjs/config");
 const assets_module_1 = require("./assets/assets.module");
 const auth_module_1 = require("./auth/auth.module");
 const calendar_module_1 = require("./calendar/calendar.module");
+const client_groups_module_1 = require("./client-groups/client-groups.module");
 const clients_module_1 = require("./clients/clients.module");
 const contracts_module_1 = require("./contracts/contracts.module");
 const content_module_1 = require("./content/content.module");
@@ -23,7 +24,10 @@ const message_module_1 = require("./message/message.module");
 const notifications_module_1 = require("./notifications/notifications.module");
 const prisma_module_1 = require("./prisma/prisma.module");
 const reports_module_1 = require("./reports/reports.module");
+const settings_module_1 = require("./settings/settings.module");
 const timesheet_module_1 = require("./timesheet/timesheet.module");
+const user_groups_module_1 = require("./user-groups/user-groups.module");
+const users_module_1 = require("./users/users.module");
 let AppModule = class AppModule {
 };
 exports.AppModule = AppModule;
@@ -38,6 +42,7 @@ exports.AppModule = AppModule = __decorate([
             assets_module_1.AssetsModule,
             calendar_module_1.CalendarModule,
             clients_module_1.ClientsModule,
+            client_groups_module_1.ClientGroupsModule,
             contracts_module_1.ContractsModule,
             content_module_1.ContentModule,
             dashboard_module_1.DashboardModule,
@@ -47,7 +52,10 @@ exports.AppModule = AppModule = __decorate([
             message_module_1.MessageModule,
             notifications_module_1.NotificationsModule,
             reports_module_1.ReportsModule,
+            settings_module_1.SettingsModule,
             timesheet_module_1.TimesheetModule,
+            user_groups_module_1.UserGroupsModule,
+            users_module_1.UsersModule,
         ],
     })
 ], AppModule);

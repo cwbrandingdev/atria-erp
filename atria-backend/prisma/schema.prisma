@@ -30,7 +30,10 @@ model User {
   avatarUrl       String?
   roleId          String
   role            Role                   @relation(fields: [roleId], references: [id])
+  userGroupId     String?
+  userGroup       UserGroup?             @relation(fields: [userGroupId], references: [id], onDelete: SetNull)
   hourlyRate      Decimal?               @db.Decimal(10, 2)
+  mustChangePassword Boolean             @default(true)
   authTokens      AuthToken[]
   transactions    FinancialTransaction[]
   eventsCreated   CalendarEvent[]        @relation("EventCreator")
@@ -46,6 +49,7 @@ model User {
   reportsGenerated ClientReport[]         @relation("ReportGenerator")
   notifications    Notification[]
   assetsUploaded   Asset[]                 @relation("AssetUploader")
+  settings         UserSettings?
   createdAt       DateTime               @default(now())
   updatedAt       DateTime               @updatedAt
 }
@@ -147,14 +151,22 @@ enum KanbanTaskPriority {
   PLANNED
 }
 
+enum KanbanColumnType {
+  TO_DO
+  IN_PROGRESS
+  DONE
+  CUSTOM
+}
+
 model KanbanColumn {
-  id        String       @id @default(uuid())
+  id        String            @id @default(uuid())
   title     String
-  order     Int          @default(0)
-  color     String       @default("#004949")
+  order     Int               @default(0)
+  color     String            @default("#004949")
+  type      KanbanColumnType?
   tasks     KanbanTask[]
-  createdAt DateTime     @default(now())
-  updatedAt DateTime     @updatedAt
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
 
   @@index([order])
 }
@@ -273,6 +285,8 @@ model Client {
   zipCode     String?
   notes       String?       @db.Text
   avatarUrl   String?
+  clientGroupId String?
+  clientGroup   ClientGroup?  @relation(fields: [clientGroupId], references: [id], onDelete: SetNull)
   posts       ContentPost[]
   contracts   Contract[]
   reports     ClientReport[]
@@ -283,6 +297,27 @@ model Client {
   updatedAt   DateTime      @updatedAt
 
   @@index([companyName])
+  @@index([clientGroupId])
+}
+
+model UserGroup {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  color       String   @default("#E8C39E")
+  users       User[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ClientGroup {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  color       String   @default("#E8C39E")
+  clients     Client[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }
 
 model ClientReport {
@@ -427,4 +462,16 @@ model Notification {
 
   @@index([userId, isRead])
   @@index([userId, createdAt])
+}
+
+model UserSettings {
+  id              String   @id @default(uuid())
+  userId          String   @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  primaryColor    String   @default("#004949")
+  accentColor     String   @default("#E8C39E")
+  backgroundColor String   @default("#FFFFFF")
+  textColor       String   @default("#0F172A")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
 }

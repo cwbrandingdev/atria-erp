@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { toast } from "@/lib/toast";
 import { ApiError } from "@/services";
 import { useState } from "react";
 
@@ -34,11 +35,10 @@ export function LoginForm({
 
     try {
       await login({ email, password });
+      toast.success("Bem-vindo de volta!");
       router.push("/dashboard");
     } catch (err) {
-      if (err instanceof ApiError) {
-        setError(err.message);
-      } else {
+      if (!(err instanceof ApiError)) {
         setError("Não foi possível fazer login. Tente novamente.");
       }
     } finally {

@@ -1,8 +1,11 @@
 import { apiRequest } from "./api";
 import type { Client, CreateClientInput, UpdateClientInput } from "./types";
 
-export async function getClients(): Promise<Client[]> {
-  return apiRequest<Client[]>("/clients");
+export async function getClients(clientGroupId?: string): Promise<Client[]> {
+  const query = clientGroupId
+    ? `?clientGroupId=${encodeURIComponent(clientGroupId)}`
+    : "";
+  return apiRequest<Client[]>(`/clients${query}`);
 }
 
 export async function getClient(id: string): Promise<Client> {

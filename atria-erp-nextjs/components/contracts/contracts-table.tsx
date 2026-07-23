@@ -43,6 +43,7 @@ import {
   STATUS_STYLES,
 } from "@/lib/contract-utils";
 import { contractsService, ApiError } from "@/services";
+import { toast } from "@/lib/toast";
 import type { Contract } from "@/services/types";
 
 function getInitials(name: string) {
@@ -86,12 +87,11 @@ export function ContractsTable({
       setSignResult(result.receivablesGenerated);
       setSignOpen(false);
       onRefresh();
+      toast.success("Contrato assinado com sucesso!");
     } catch (err) {
-      setActionError(
-        err instanceof ApiError
-          ? err.message
-          : "Não foi possível assinar o contrato.",
-      );
+      if (!(err instanceof ApiError)) {
+        setActionError("Não foi possível assinar o contrato.");
+      }
     } finally {
       setActionLoading(false);
     }
@@ -103,12 +103,11 @@ export function ContractsTable({
     try {
       await contractsService.deleteContract(contract.id);
       onRefresh();
+      toast.info("Contrato removido");
     } catch (err) {
-      alert(
-        err instanceof ApiError
-          ? err.message
-          : "Não foi possível excluir o contrato.",
-      );
+      if (!(err instanceof ApiError)) {
+        toast.error("Não foi possível excluir o contrato.");
+      }
     }
   }
 

@@ -22,8 +22,8 @@ let ClientsController = class ClientsController {
     constructor(clientsService) {
         this.clientsService = clientsService;
     }
-    findAll() {
-        return this.clientsService.findAll();
+    findAll(clientGroupId) {
+        return this.clientsService.findAll(clientGroupId);
     }
     findOne(id) {
         return this.clientsService.findOne(id);
@@ -41,8 +41,9 @@ let ClientsController = class ClientsController {
 exports.ClientsController = ClientsController;
 __decorate([
     (0, common_1.Get)(),
+    __param(0, (0, common_1.Query)('clientGroupId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], ClientsController.prototype, "findAll", null);
 __decorate([

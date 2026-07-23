@@ -4,6 +4,7 @@ import {
   IsOptional,
   IsString,
   IsUrl,
+  IsUUID,
   MaxLength,
 } from 'class-validator';
 
@@ -69,6 +70,10 @@ export class CreateClientDto {
   @IsOptional()
   @MaxLength(2000)
   avatarUrl?: string;
+
+  @IsUUID()
+  @IsOptional()
+  clientGroupId?: string;
 }
 
 export class UpdateClientDto {
@@ -133,4 +138,8 @@ export class UpdateClientDto {
   @IsOptional()
   @MaxLength(2000)
   avatarUrl?: string;
+
+  @IsUUID()
+  @IsOptional()
+  clientGroupId?: string;
 }

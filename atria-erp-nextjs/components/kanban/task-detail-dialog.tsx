@@ -15,6 +15,7 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { TaskTimer } from "@/components/kanban/task-timer";
 import { getInitials, PRIORITY_LABELS } from "@/lib/kanban-utils";
+import { toast } from "@/lib/toast";
 import {
   calendarService,
   clientsService,
@@ -133,12 +134,11 @@ export function TaskDetailDialog({
       });
       onUpdate();
       onOpenChange(false);
+      toast.success("Tarefa atualizada");
     } catch (err) {
-      setError(
-        err instanceof ApiError
-          ? err.message
-          : "Não foi possível atualizar a tarefa.",
-      );
+      if (!(err instanceof ApiError)) {
+        setError("Não foi possível atualizar a tarefa.");
+      }
     } finally {
       setLoading(false);
     }
@@ -152,12 +152,11 @@ export function TaskDetailDialog({
       await kanbanService.deleteTask(task.id);
       onUpdate();
       onOpenChange(false);
+      toast.info("Tarefa removida");
     } catch (err) {
-      setError(
-        err instanceof ApiError
-          ? err.message
-          : "Não foi possível excluir a tarefa.",
-      );
+      if (!(err instanceof ApiError)) {
+        setError("Não foi possível excluir a tarefa.");
+      }
     } finally {
       setLoading(false);
     }
