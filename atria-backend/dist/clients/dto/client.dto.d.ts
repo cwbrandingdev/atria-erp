@@ -12,6 +12,7 @@ export declare class CreateClientDto {
     zipCode?: string;
     notes?: string;
     avatarUrl?: string;
+    clientGroupId?: string;
 }
 export declare class UpdateClientDto {
     companyName?: string;
@@ -27,4 +28,5 @@ export declare class UpdateClientDto {
     zipCode?: string;
     notes?: string;
     avatarUrl?: string;
+    clientGroupId?: string;
 }

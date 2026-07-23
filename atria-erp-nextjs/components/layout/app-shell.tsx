@@ -9,7 +9,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="flex h-screen overflow-hidden bg-[#F8F8F6]">
+    <div className="flex h-screen overflow-hidden bg-[var(--atria-base)]">
       <AppSidebar />
 
       <MobileDrawer open={mobileOpen} onOpenChange={setMobileOpen} />

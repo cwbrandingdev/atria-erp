@@ -25,6 +25,7 @@ class CreateClientDto {
     zipCode;
     notes;
     avatarUrl;
+    clientGroupId;
 }
 exports.CreateClientDto = CreateClientDto;
 __decorate([
@@ -102,6 +103,11 @@ __decorate([
     (0, class_validator_1.MaxLength)(2000),
     __metadata("design:type", String)
 ], CreateClientDto.prototype, "avatarUrl", void 0);
+__decorate([
+    (0, class_validator_1.IsUUID)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateClientDto.prototype, "clientGroupId", void 0);
 class UpdateClientDto {
     companyName;
     contactName;
@@ -116,6 +122,7 @@ class UpdateClientDto {
     zipCode;
     notes;
     avatarUrl;
+    clientGroupId;
 }
 exports.UpdateClientDto = UpdateClientDto;
 __decorate([
@@ -193,4 +200,9 @@ __decorate([
     (0, class_validator_1.MaxLength)(2000),
     __metadata("design:type", String)
 ], UpdateClientDto.prototype, "avatarUrl", void 0);
+__decorate([
+    (0, class_validator_1.IsUUID)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], UpdateClientDto.prototype, "clientGroupId", void 0);
 //# sourceMappingURL=client.dto.js.map

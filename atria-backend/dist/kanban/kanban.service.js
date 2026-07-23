@@ -14,6 +14,7 @@ const common_1 = require("@nestjs/common");
 const client_1 = require("@prisma/client");
 const prisma_service_1 = require("../prisma/prisma.service");
 const notifications_service_1 = require("../notifications/notifications.service");
+const kanban_defaults_1 = require("./kanban-defaults");
 const userSelect = { id: true, name: true, avatarUrl: true };
 const clientSelect = {
     id: true,
@@ -41,6 +42,7 @@ let KanbanService = class KanbanService {
         this.notifications = notifications;
     }
     async getColumns() {
+        await this.ensureDefaultColumns();
         const columns = await this.prisma.kanbanColumn.findMany({
             orderBy: { order: 'asc' },
         });
@@ -54,7 +56,8 @@ let KanbanService = class KanbanService {
             data: {
                 title: dto.title,
                 color: dto.color ?? '#004949',
-                order: (maxOrder._max.order ?? -1) + 1,
+                type: client_1.KanbanColumnType.CUSTOM,
+                order: (maxOrder._max.order ?? 0) + 1,
             },
         });
         return this.toColumnResponse(column);
@@ -265,6 +268,19 @@ let KanbanService = class KanbanService {
             user: entry.user,
         }));
     }
+    async ensureDefaultColumns() {
+        const count = await this.prisma.kanbanColumn.count();
+        if (count > 0)
+            return;
+        await this.prisma.$transaction(async (tx) => {
+            const innerCount = await tx.kanbanColumn.count();
+            if (innerCount > 0)
+                return;
+            await tx.kanbanColumn.createMany({
+                data: kanban_defaults_1.DEFAULT_KANBAN_COLUMNS.map((column) => ({ ...column })),
+            });
+        });
+    }
     taskInclude() {
         return taskInclude;
     }
@@ -351,6 +367,9 @@ let KanbanService = class KanbanService {
             title: column.title,
             order: column.order,
             color: column.color,
+            type: column.type
+                ? column.type.toLowerCase()
+                : null,
         };
     }
     toTaskResponse(task, totalLoggedSeconds) {

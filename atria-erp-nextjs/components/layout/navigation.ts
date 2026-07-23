@@ -8,6 +8,7 @@ import {
   FolderOpen,
   Users,
   FileSignature,
+  Settings,
   type LucideIcon,
 } from "lucide-react";
 
@@ -69,6 +70,15 @@ export const navigation: NavItem[] = [
     name: "Resumos",
     href: "/resumos",
     icon: FileText,
+  },
+  {
+    name: "Configurações",
+    href: "/settings",
+    icon: Settings,
+    children: [
+      { name: "Aparência", href: "/settings/appearance" },
+      { name: "Usuários", href: "/settings/users" },
+    ],
   },
 ];
 

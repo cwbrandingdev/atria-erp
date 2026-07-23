@@ -140,6 +140,13 @@ export function KanbanBoard() {
       </div>
 
       <DragDropContext onDragEnd={handleDragEnd}>
+        {columns.length === 0 ? (
+          <div className="rounded-2xl border border-dashed border-[var(--atria-primary)]/20 p-12 text-center">
+            <p className="text-sm text-[var(--atria-primary)]/50">
+              Carregando colunas do quadro...
+            </p>
+          </div>
+        ) : (
         <div className="flex gap-4 overflow-x-auto pb-4">
           {columns.map((column) => {
             const columnTasks = getColumnTasks(column.id);
@@ -147,7 +154,7 @@ export function KanbanBoard() {
             return (
               <div
                 key={column.id}
-                className="flex w-72 shrink-0 flex-col gap-3"
+                className="flex w-72 shrink-0 flex-col"
               >
                 <ColumnHeader
                   column={column}
@@ -160,11 +167,15 @@ export function KanbanBoard() {
                     <div
                       ref={provided.innerRef}
                       {...provided.droppableProps}
-                      className={`flex min-h-[420px] flex-1 flex-col gap-3 rounded-2xl border p-3 transition-colors ${
+                      className={`flex min-h-[420px] flex-1 flex-col gap-3 rounded-b-2xl border border-t-0 p-3 transition-colors ${
                         snapshot.isDraggingOver
                           ? "border-[var(--atria-accent)] bg-[var(--atria-accent)]/10"
                           : "border-[var(--atria-primary)]/10 bg-[var(--atria-primary)]/[0.02]"
                       }`}
+                      style={{
+                        borderLeftColor: `${column.color}55`,
+                        borderLeftWidth: 2,
+                      }}
                     >
                       {columnTasks.length === 0 && (
                         <p className="py-8 text-center text-xs text-[var(--atria-primary)]/40">
@@ -210,6 +221,7 @@ export function KanbanBoard() {
             );
           })}
         </div>
+        )}
       </DragDropContext>
 
       <TaskDetailDialog

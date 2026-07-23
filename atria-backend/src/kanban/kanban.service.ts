@@ -5,11 +5,13 @@ import {
 } from '@nestjs/common';
 import {
   KanbanColumn,
+  KanbanColumnType,
   KanbanTaskPriority,
   Prisma,
 } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { DEFAULT_KANBAN_COLUMNS } from './kanban-defaults';
 import { CreateCommentDto } from './dto/comment.dto';
 import {
   CreateColumnDto,
@@ -58,6 +60,8 @@ export class KanbanService {
   ) {}
 
   async getColumns() {
+    await this.ensureDefaultColumns();
+
     const columns = await this.prisma.kanbanColumn.findMany({
       orderBy: { order: 'asc' },
     });
@@ -74,7 +78,8 @@ export class KanbanService {
       data: {
         title: dto.title,
         color: dto.color ?? '#004949',
-        order: (maxOrder._max.order ?? -1) + 1,
+        type: KanbanColumnType.CUSTOM,
+        order: (maxOrder._max.order ?? 0) + 1,
       },
     });
 
@@ -354,6 +359,20 @@ export class KanbanService {
     }));
   }
 
+  private async ensureDefaultColumns() {
+    const count = await this.prisma.kanbanColumn.count();
+    if (count > 0) return;
+
+    await this.prisma.$transaction(async (tx) => {
+      const innerCount = await tx.kanbanColumn.count();
+      if (innerCount > 0) return;
+
+      await tx.kanbanColumn.createMany({
+        data: DEFAULT_KANBAN_COLUMNS.map((column) => ({ ...column })),
+      });
+    });
+  }
+
   private taskInclude() {
     return taskInclude;
   }
@@ -465,6 +484,13 @@ export class KanbanService {
       title: column.title,
       order: column.order,
       color: column.color,
+      type: column.type
+        ? (column.type.toLowerCase() as
+            | 'to_do'
+            | 'in_progress'
+            | 'done'
+            | 'custom')
+        : null,
     };
   }
 

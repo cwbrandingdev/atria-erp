@@ -13,8 +13,8 @@ import {
 } from "@/components/ui/dialog";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { clientsService, ApiError } from "@/services";
-import type { Client } from "@/services/types";
+import { clientsService, clientGroupsService, ApiError } from "@/services";
+import type { Client, ClientGroup } from "@/services/types";
 
 interface ClientFormDialogProps {
   client?: Client | null;
@@ -51,8 +51,15 @@ export function ClientFormDialog({
   const [zipCode, setZipCode] = useState("");
   const [notes, setNotes] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
+  const [clientGroupId, setClientGroupId] = useState("");
+  const [groups, setGroups] = useState<ClientGroup[]>([]);
 
   const isEditing = Boolean(client);
+
+  useEffect(() => {
+    if (!open) return;
+    void clientGroupsService.getClientGroups().then(setGroups).catch(() => setGroups([]));
+  }, [open]);
 
   useEffect(() => {
     if (!open) return;
@@ -71,6 +78,7 @@ export function ClientFormDialog({
       setZipCode(client.zipCode ?? "");
       setNotes(client.notes ?? "");
       setAvatarUrl(client.avatarUrl ?? "");
+      setClientGroupId(client.clientGroup?.id ?? "");
     } else {
       resetForm();
     }
@@ -90,6 +98,7 @@ export function ClientFormDialog({
     setZipCode("");
     setNotes("");
     setAvatarUrl("");
+    setClientGroupId("");
     setError(null);
   }
 
@@ -112,6 +121,7 @@ export function ClientFormDialog({
       zipCode: zipCode || undefined,
       notes: notes || undefined,
       avatarUrl: avatarUrl || undefined,
+      clientGroupId: clientGroupId || undefined,
     };
 
     try {
@@ -255,6 +265,23 @@ export function ClientFormDialog({
               />
             </Field>
           </div>
+
+          <Field>
+            <FieldLabel htmlFor="client-group">Grupo</FieldLabel>
+            <select
+              id="client-group"
+              value={clientGroupId}
+              onChange={(e) => setClientGroupId(e.target.value)}
+              className="h-10 w-full rounded-lg border border-input bg-transparent px-3 text-sm"
+            >
+              <option value="">Sem grupo</option>
+              {groups.map((group) => (
+                <option key={group.id} value={group.id}>
+                  {group.name}
+                </option>
+              ))}
+            </select>
+          </Field>
 
           <Field>
             <FieldLabel htmlFor="client-avatar">URL do Avatar</FieldLabel>

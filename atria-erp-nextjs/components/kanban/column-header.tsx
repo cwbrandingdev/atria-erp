@@ -17,6 +17,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { getColumnTypeLabel } from "@/lib/kanban-utils";
 import { kanbanService, ApiError } from "@/services";
 import type { KanbanColumn } from "@/services/types";
 
@@ -69,42 +70,54 @@ export function ColumnHeader({ column, taskCount, onUpdate }: ColumnHeaderProps)
 
   return (
     <>
-      <div className="flex items-center justify-between px-1">
-        <div className="flex items-center gap-2">
-          <span
-            className="size-2.5 rounded-full"
-            style={{ backgroundColor: column.color }}
-          />
-          <h2 className="text-sm font-semibold text-[var(--atria-primary)]">
-            {column.title}
-          </h2>
-          <span className="rounded-full bg-[var(--atria-accent)]/30 px-2 py-0.5 text-xs font-medium text-[var(--atria-primary)]">
-            {taskCount}
-          </span>
-        </div>
+      <div
+        className="rounded-t-2xl border border-b-0 border-[var(--atria-primary)]/10 bg-white px-3 py-2.5"
+        style={{ borderTopColor: column.color, borderTopWidth: 3 }}
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex min-w-0 flex-1 items-center gap-2">
+            <span
+              className="size-2.5 shrink-0 rounded-full ring-2 ring-[var(--atria-accent)]/40"
+              style={{ backgroundColor: column.color }}
+            />
+            <div className="min-w-0">
+              <h2 className="truncate text-sm font-semibold text-[var(--atria-primary)]">
+                {column.title}
+              </h2>
+              {getColumnTypeLabel(column.type) && (
+                <span className="text-[10px] font-medium uppercase tracking-wide text-[var(--atria-primary)]/40">
+                  {getColumnTypeLabel(column.type)}
+                </span>
+              )}
+            </div>
+            <span className="shrink-0 rounded-full bg-[var(--atria-accent)]/40 px-2 py-0.5 text-xs font-semibold text-[var(--atria-primary)]">
+              {taskCount}
+            </span>
+          </div>
 
-        <DropdownMenu>
-          <DropdownMenuTrigger
-            render={<Button variant="ghost" size="icon-sm" />}
-          >
-            <MoreHorizontal className="size-4" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem
-              onClick={() => {
-                setTitle(column.title);
-                setRenameOpen(true);
-              }}
+          <DropdownMenu>
+            <DropdownMenuTrigger
+              render={<Button variant="ghost" size="icon-sm" />}
             >
-              <Pencil className="size-4" />
-              Renomear
-            </DropdownMenuItem>
-            <DropdownMenuItem variant="destructive" onClick={handleDelete}>
-              <Trash2 className="size-4" />
-              Excluir
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+              <MoreHorizontal className="size-4" />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+                onClick={() => {
+                  setTitle(column.title);
+                  setRenameOpen(true);
+                }}
+              >
+                <Pencil className="size-4" />
+                Renomear
+              </DropdownMenuItem>
+              <DropdownMenuItem variant="destructive" onClick={handleDelete}>
+                <Trash2 className="size-4" />
+                Excluir
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       <Dialog open={renameOpen} onOpenChange={setRenameOpen}>

@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
@@ -18,8 +19,8 @@ export class ClientsController {
   constructor(private readonly clientsService: ClientsService) {}
 
   @Get()
-  findAll() {
-    return this.clientsService.findAll();
+  findAll(@Query('clientGroupId') clientGroupId?: string) {
+    return this.clientsService.findAll(clientGroupId);
   }
 
   @Get(':id')

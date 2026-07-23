@@ -11,24 +11,28 @@ export declare class KanbanController {
         title: string;
         order: number;
         color: string;
+        type: "to_do" | "in_progress" | "done" | "custom" | null;
     }[]>;
     createColumn(dto: CreateColumnDto): Promise<{
         id: string;
         title: string;
         order: number;
         color: string;
+        type: "to_do" | "in_progress" | "done" | "custom" | null;
     }>;
     reorderColumns(dto: ReorderColumnsDto): Promise<{
         id: string;
         title: string;
         order: number;
         color: string;
+        type: "to_do" | "in_progress" | "done" | "custom" | null;
     }[]>;
     updateColumn(id: string, dto: UpdateColumnDto): Promise<{
         id: string;
         title: string;
         order: number;
         color: string;
+        type: "to_do" | "in_progress" | "done" | "custom" | null;
     }>;
     deleteColumn(id: string): Promise<void>;
     getTasks(query: QueryTasksDto): Promise<{
@@ -41,6 +45,7 @@ export declare class KanbanController {
             title: string;
             order: number;
             color: string;
+            type: "to_do" | "in_progress" | "done" | "custom" | null;
         };
         clientId: string | null;
         client: {
@@ -75,6 +80,7 @@ export declare class KanbanController {
             title: string;
             order: number;
             color: string;
+            type: "to_do" | "in_progress" | "done" | "custom" | null;
         };
         clientId: string | null;
         client: {
@@ -109,6 +115,7 @@ export declare class KanbanController {
             title: string;
             order: number;
             color: string;
+            type: "to_do" | "in_progress" | "done" | "custom" | null;
         };
         clientId: string | null;
         client: {
@@ -143,6 +150,7 @@ export declare class KanbanController {
             title: string;
             order: number;
             color: string;
+            type: "to_do" | "in_progress" | "done" | "custom" | null;
         };
         clientId: string | null;
         client: {
@@ -177,6 +185,7 @@ export declare class KanbanController {
             title: string;
             order: number;
             color: string;
+            type: "to_do" | "in_progress" | "done" | "custom" | null;
         };
         clientId: string | null;
         client: {
