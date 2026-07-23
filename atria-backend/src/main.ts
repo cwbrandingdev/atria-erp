@@ -19,12 +19,22 @@ async function bootstrap() {
     'https://atria-erp.vercel.app',
   );
 
+  const allowedOrigins = corsOrigin
+    .split(',')
+    .map((origin) => origin.trim().replace(/\/$/, ''));
+
   app.enableCors({
-    origin: corsOrigin.split(',').map((o) => o.trim()),
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error(`CORS blocked for origin: ${origin}`));
+      }
+    },
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
     credentials: true,
   });
-
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
