@@ -35,3 +35,19 @@ export function formatDate(date: string) {
     year: "numeric",
   });
 }
+
+export function buildContractPdfFilename(contract: {
+  client: { companyName: string };
+  startDate: string;
+  title?: string;
+}) {
+  const client = contract.client.companyName
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 48);
+
+  const date = contract.startDate.slice(0, 10);
+  return `Contrato-${client}-${date}.pdf`;
+}

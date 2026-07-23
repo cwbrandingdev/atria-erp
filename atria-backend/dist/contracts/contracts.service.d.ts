@@ -1,12 +1,15 @@
+import { StreamableFile } from '@nestjs/common';
 import { FinanceService } from '../finance/finance.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
+import { ContractsPdfService } from './contracts-pdf.service';
 import { CreateContractDto, QueryContractsDto, UpdateContractDto } from './dto/contract.dto';
 export declare class ContractsService {
     private readonly prisma;
     private readonly financeService;
     private readonly notifications;
-    constructor(prisma: PrismaService, financeService: FinanceService, notifications: NotificationsService);
+    private readonly pdfService;
+    constructor(prisma: PrismaService, financeService: FinanceService, notifications: NotificationsService, pdfService: ContractsPdfService);
     findAll(query: QueryContractsDto): Promise<{
         id: string;
         clientId: string;
@@ -61,6 +64,7 @@ export declare class ContractsService {
         createdAt: string;
         updatedAt: string;
     }>;
+    getContractPdf(id: string): Promise<StreamableFile>;
     create(userId: string, dto: CreateContractDto): Promise<{
         id: string;
         clientId: string;
@@ -159,6 +163,7 @@ export declare class ContractsService {
             createdAt: string;
         }[];
     }>;
+    private ensureExistsForPdf;
     private ensureExists;
     private ensureClientExists;
     private toResponse;

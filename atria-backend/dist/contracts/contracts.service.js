@@ -11,10 +11,13 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ContractsService = void 0;
 const common_1 = require("@nestjs/common");
+const fs_1 = require("fs");
+const path_1 = require("path");
 const client_1 = require("@prisma/client");
 const finance_service_1 = require("../finance/finance.service");
 const notifications_service_1 = require("../notifications/notifications.service");
 const prisma_service_1 = require("../prisma/prisma.service");
+const contracts_pdf_service_1 = require("./contracts-pdf.service");
 const contractInclude = {
     client: {
         select: {
@@ -28,14 +31,32 @@ const contractInclude = {
     createdBy: { select: { id: true, name: true, avatarUrl: true } },
     _count: { select: { transactions: true } },
 };
+const pdfContractInclude = {
+    client: {
+        select: {
+            companyName: true,
+            contactName: true,
+            email: true,
+            phone: true,
+            street: true,
+            number: true,
+            city: true,
+            state: true,
+            zipCode: true,
+        },
+    },
+    createdBy: { select: { name: true, email: true } },
+};
 let ContractsService = class ContractsService {
     prisma;
     financeService;
     notifications;
-    constructor(prisma, financeService, notifications) {
+    pdfService;
+    constructor(prisma, financeService, notifications, pdfService) {
         this.prisma = prisma;
         this.financeService = financeService;
         this.notifications = notifications;
+        this.pdfService = pdfService;
     }
     async findAll(query) {
         const contracts = await this.prisma.contract.findMany({
@@ -51,6 +72,25 @@ let ContractsService = class ContractsService {
     async findOne(id) {
         const contract = await this.ensureExists(id);
         return this.toResponse(contract);
+    }
+    async getContractPdf(id) {
+        const contract = await this.ensureExistsForPdf(id);
+        if (contract.pdfUrl?.startsWith('/uploads/')) {
+            const filePath = (0, path_1.join)(process.cwd(), contract.pdfUrl.replace(/^\//, ''));
+            if ((0, fs_1.existsSync)(filePath)) {
+                const filename = this.pdfService.buildFilename(contract);
+                return new common_1.StreamableFile((0, fs_1.createReadStream)(filePath), {
+                    type: 'application/pdf',
+                    disposition: `inline; filename="${filename}"`,
+                });
+            }
+        }
+        const buffer = await this.pdfService.generateBuffer(contract);
+        const filename = this.pdfService.buildFilename(contract);
+        return new common_1.StreamableFile(buffer, {
+            type: 'application/pdf',
+            disposition: `inline; filename="${filename}"`,
+        });
     }
     async create(userId, dto) {
         await this.ensureClientExists(dto.clientId);
@@ -132,6 +172,15 @@ let ContractsService = class ContractsService {
             receivables,
         };
     }
+    async ensureExistsForPdf(id) {
+        const contract = await this.prisma.contract.findUnique({
+            where: { id },
+            include: pdfContractInclude,
+        });
+        if (!contract)
+            throw new common_1.NotFoundException('Contract not found');
+        return contract;
+    }
     async ensureExists(id) {
         const contract = await this.prisma.contract.findUnique({
             where: { id },
@@ -172,6 +221,7 @@ exports.ContractsService = ContractsService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         finance_service_1.FinanceService,
-        notifications_service_1.NotificationsService])
+        notifications_service_1.NotificationsService,
+        contracts_pdf_service_1.ContractsPdfService])
 ], ContractsService);
 //# sourceMappingURL=contracts.service.js.map

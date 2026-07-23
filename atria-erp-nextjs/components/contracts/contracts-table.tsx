@@ -4,6 +4,7 @@ import { useState } from "react";
 import {
   Eye,
   FileSignature,
+  FileText,
   MoreHorizontal,
   Pencil,
   Trash2,
@@ -34,6 +35,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ContractFormDialog } from "@/components/contracts/contract-form-dialog";
+import { ContractPdfViewerDialog } from "@/components/contracts/contract-pdf-viewer-dialog";
 import { ContractPreviewDialog } from "@/components/contracts/contract-preview-dialog";
 import {
   formatCurrency,
@@ -68,6 +70,8 @@ export function ContractsTable({
 }: ContractsTableProps) {
   const [previewContract, setPreviewContract] = useState<Contract | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
+  const [pdfContract, setPdfContract] = useState<Contract | null>(null);
+  const [pdfOpen, setPdfOpen] = useState(false);
   const [editingContract, setEditingContract] = useState<Contract | null>(null);
   const [editOpen, setEditOpen] = useState(false);
   const [signingContract, setSigningContract] = useState<Contract | null>(null);
@@ -215,6 +219,15 @@ export function ContractsTable({
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem
                           onClick={() => {
+                            setPdfContract(contract);
+                            setPdfOpen(true);
+                          }}
+                        >
+                          <FileText className="size-4" />
+                          Visualizar PDF
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          onClick={() => {
                             setPreviewContract(contract);
                             setPreviewOpen(true);
                           }}
@@ -268,6 +281,15 @@ export function ContractsTable({
         contract={previewContract}
         open={previewOpen}
         onOpenChange={setPreviewOpen}
+      />
+
+      <ContractPdfViewerDialog
+        contract={pdfContract}
+        open={pdfOpen}
+        onOpenChange={(value) => {
+          setPdfOpen(value);
+          if (!value) setPdfContract(null);
+        }}
       />
 
       <ContractFormDialog

@@ -1,4 +1,4 @@
-import { apiRequest } from "./api";
+import { apiRequest, apiRequestBlob } from "./api";
 import type {
   Contract,
   CreateContractInput,
@@ -65,4 +65,8 @@ export async function signContract(id: string): Promise<SignContractResult> {
     method: "PATCH",
     body: {},
   });
+}
+
+export async function getContractPdf(id: string): Promise<Blob> {
+  return apiRequestBlob(`/contracts/${id}/pdf`, { method: "GET" });
 }
