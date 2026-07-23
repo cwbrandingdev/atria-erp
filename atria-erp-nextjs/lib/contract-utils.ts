@@ -36,6 +36,34 @@ export function formatDate(date: string) {
   });
 }
 
+export function formatLongDate(date: string | Date) {
+  return new Date(date).toLocaleDateString("pt-BR", {
+    day: "2-digit",
+    month: "long",
+    year: "numeric",
+  });
+}
+
+export function formatClientAddress(client: {
+  street: string | null;
+  number: string | null;
+  city: string | null;
+  state: string | null;
+  zipCode: string | null;
+}) {
+  const parts = [
+    client.street && client.number
+      ? `${client.street}, ${client.number}`
+      : client.street,
+    client.city && client.state
+      ? `${client.city} - ${client.state}`
+      : client.city ?? client.state,
+    client.zipCode ? `CEP ${client.zipCode}` : null,
+  ].filter(Boolean);
+
+  return parts.length > 0 ? parts.join(" · ") : null;
+}
+
 export function buildContractPdfFilename(contract: {
   client: { companyName: string };
   startDate: string;

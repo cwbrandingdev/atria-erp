@@ -367,6 +367,12 @@ export interface Contract {
     companyName: string;
     contactName: string | null;
     email: string | null;
+    phone: string | null;
+    street: string | null;
+    number: string | null;
+    city: string | null;
+    state: string | null;
+    zipCode: string | null;
     avatarUrl: string | null;
   };
   title: string;
@@ -377,7 +383,12 @@ export interface Contract {
   endDate: string | null;
   termsContent: string;
   pdfUrl: string | null;
-  createdBy: { id: string; name: string; avatarUrl: string | null };
+  createdBy: {
+    id: string;
+    name: string;
+    email: string | null;
+    avatarUrl: string | null;
+  };
   receivablesCount: number;
   createdAt: string;
   updatedAt: string;

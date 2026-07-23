@@ -316,11 +316,14 @@
   }
 
   .print-report-container,
-  .print-report-container * {
+  .print-report-container *,
+  .contract-print-root,
+  .contract-print-root * {
     visibility: visible;
   }
 
-  .print-report-container {
+  .print-report-container,
+  .contract-print-root {
     position: absolute;
     left: 0;
     top: 0;
@@ -328,5 +331,28 @@
     border: none !important;
     box-shadow: none !important;
     border-radius: 0 !important;
+  }
+
+  .contract-print-root {
+    padding: 0 !important;
+    background: white !important;
+  }
+
+  .contract-print-root .contract-document {
+    max-width: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+  }
+
+  .contract-document-section {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .contract-document-signatures {
+    break-before: auto;
+    page-break-before: auto;
   }
 }
