@@ -25,7 +25,7 @@ interface AuthContextValue {
   accessToken: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
-  login: (credentials: LoginCredentials) => Promise<void>;
+  login: (credentials: LoginCredentials, rememberMe?: boolean) => Promise<void>;
   logout: () => Promise<void>;
   refreshSession: () => Promise<boolean>;
 }
@@ -38,9 +38,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [accessToken, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const applySession = useCallback((response: AuthResponse) => {
-    setAccessToken(response.accessToken);
-    setStoredUser(response.user);
+  const applySession = useCallback((response: AuthResponse, remember = false) => {
+    setAccessToken(response.accessToken, remember);
+    setStoredUser(response.user, remember);
     setToken(response.accessToken);
     setUser(response.user);
   }, []);
@@ -85,13 +85,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [refreshSession]);
 
   const login = useCallback(
-    async (credentials: LoginCredentials) => {
+    async (credentials: LoginCredentials, rememberMe = false) => {
       const response = await apiRequest<AuthResponse>("/auth/login", {
         method: "POST",
         body: credentials,
         skipAuth: true,
       });
-      applySession(response);
+      applySession(response, rememberMe);
     },
     [applySession],
   );

@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { LayoutGrid, List } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { ContentStatusBadge } from "@/components/content/content-status-badge";
 import type { ContentPlatform, ContentPost } from "@/services/types";
 
 const PLATFORMS: { id: ContentPlatform | "all"; label: string }[] = [
@@ -14,20 +16,6 @@ const PLATFORMS: { id: ContentPlatform | "all"; label: string }[] = [
   { id: "youtube", label: "YouTube" },
   { id: "linkedin", label: "LinkedIn" },
 ];
-
-const STATUS_STYLES = {
-  draft: "bg-[var(--atria-primary)]/10 text-[var(--atria-primary)]",
-  pending_approval: "bg-orange-100 text-orange-800",
-  scheduled: "bg-[var(--atria-accent)]/40 text-[var(--atria-primary)]",
-  published: "bg-green-100 text-green-700",
-};
-
-const STATUS_LABELS = {
-  draft: "Rascunho",
-  pending_approval: "Em Aprovação",
-  scheduled: "Agendado",
-  published: "Publicado",
-};
 
 const FORMAT_LABELS = {
   carousel: "Carrossel",
@@ -60,7 +48,21 @@ export function ContentPostGrid({
   onSelectPost,
   loading,
 }: ContentPostGridProps) {
+  const router = useRouter();
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
+
+  function handleOpenPost(post: ContentPost) {
+    if (
+      post.status === "pending_approval" ||
+      post.status === "approved" ||
+      post.status === "rejected"
+    ) {
+      router.push(`/content/${post.id}`);
+      return;
+    }
+
+    onSelectPost(post);
+  }
 
   return (
     <div className="flex flex-col gap-4">
@@ -117,7 +119,7 @@ export function ContentPostGrid({
           {posts.map((post) => (
             <Card
               key={post.id}
-              onClick={() => onSelectPost(post)}
+              onClick={() => handleOpenPost(post)}
               className="cursor-pointer rounded-2xl border border-[var(--atria-primary)]/10 bg-white p-5 transition-shadow hover:shadow-md"
             >
               <div className="mb-3 flex items-start justify-between gap-2">
@@ -132,11 +134,7 @@ export function ContentPostGrid({
                     {FORMAT_LABELS[post.format]}
                   </span>
                 </div>
-                <span
-                  className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${STATUS_STYLES[post.status]}`}
-                >
-                  {STATUS_LABELS[post.status]}
-                </span>
+                <ContentStatusBadge status={post.status} className="text-[10px]" />
               </div>
 
               <div className="mb-3 flex items-center gap-2">
@@ -181,7 +179,7 @@ export function ContentPostGrid({
           {posts.map((post) => (
             <Card
               key={post.id}
-              onClick={() => onSelectPost(post)}
+              onClick={() => handleOpenPost(post)}
               className="flex cursor-pointer items-center justify-between rounded-xl border border-[var(--atria-primary)]/10 bg-white p-4 transition-colors hover:bg-muted/30"
             >
               <div className="flex items-center gap-4">
@@ -207,11 +205,7 @@ export function ContentPostGrid({
                   </p>
                 </div>
               </div>
-              <span
-                className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${STATUS_STYLES[post.status]}`}
-              >
-                {STATUS_LABELS[post.status]}
-              </span>
+              <ContentStatusBadge status={post.status} />
             </Card>
           ))}
         </div>

@@ -303,6 +303,8 @@ export function PostFormDialog({
               >
                 <option value="draft">Rascunho</option>
                 <option value="pending_approval">Em Aprovação</option>
+                <option value="approved">Aprovado</option>
+                <option value="rejected">Rejeitado</option>
                 <option value="scheduled">Agendado</option>
                 <option value="published">Publicado</option>
               </select>

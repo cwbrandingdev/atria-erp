@@ -302,8 +302,12 @@ export type ContentPostFormat = "carousel" | "reels" | "static" | "story";
 export type ContentPostStatus =
   | "draft"
   | "pending_approval"
+  | "approved"
+  | "rejected"
   | "scheduled"
   | "published";
+
+export type PostFeedbackType = "rejection_reason" | "general_note";
 
 export interface Client {
   id: string;
@@ -452,6 +456,52 @@ export interface CreateContentPostInput {
   copy: string;
   assigneeId?: string;
   attachments?: { name: string; url: string; mimeType?: string }[];
+}
+
+export interface PostVersion {
+  id: string;
+  postId: string;
+  versionNumber: number;
+  versionLabel: string;
+  title: string;
+  copyText: string;
+  mediaUrls: string[];
+  createdBy: { id: string; name: string; avatarUrl: string | null };
+  createdAt: string;
+}
+
+export interface PostFeedback {
+  id: string;
+  postId: string;
+  versionId: string | null;
+  versionLabel: string | null;
+  comment: string;
+  type: PostFeedbackType;
+  user: { id: string; name: string; avatarUrl: string | null };
+  createdAt: string;
+}
+
+export interface PostHistoryTimelineItem {
+  kind: "version" | "feedback";
+  id: string;
+  createdAt: string;
+  data: PostVersion | PostFeedback;
+}
+
+export interface PostHistory {
+  versions: PostVersion[];
+  feedback: PostFeedback[];
+  timeline: PostHistoryTimelineItem[];
+}
+
+export interface CreatePostVersionInput {
+  title: string;
+  copyText: string;
+  mediaUrls?: string[];
+}
+
+export interface RejectContentPostInput {
+  rejectionReason: string;
 }
 
 /** @deprecated Use ContentPost */
