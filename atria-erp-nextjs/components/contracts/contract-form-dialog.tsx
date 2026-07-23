@@ -14,6 +14,7 @@ import {
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { clientsService, contractsService, ApiError } from "@/services";
+import { toast } from "@/lib/toast";
 import type {
   Client,
   Contract,
@@ -134,12 +135,13 @@ export function ContractFormDialog({
 
       setOpen(false);
       onSuccess();
-    } catch (err) {
-      setError(
-        err instanceof ApiError
-          ? err.message
-          : "Não foi possível salvar o contrato.",
+      toast.success(
+        isEditing ? "Contrato atualizado!" : "Contrato gerado com sucesso!",
       );
+    } catch (err) {
+      if (!(err instanceof ApiError)) {
+        setError("Não foi possível salvar o contrato.");
+      }
     } finally {
       setLoading(false);
     }

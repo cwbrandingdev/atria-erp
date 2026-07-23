@@ -8,6 +8,7 @@ import {
   type DropResult,
 } from "@hello-pangea/dnd";
 import { kanbanService, timesheetService } from "@/services";
+import { toast } from "@/lib/toast";
 import type { KanbanColumn, KanbanTask, TimeLog } from "@/services/types";
 import { AddColumnDialog } from "./add-column-dialog";
 import { ColumnHeader } from "./column-header";
@@ -100,6 +101,7 @@ export function KanbanBoard() {
 
     try {
       await kanbanService.moveTask(draggableId, newColumnId, newOrder);
+      toast.success("Tarefa atualizada");
       void loadBoard();
     } catch {
       void loadBoard();

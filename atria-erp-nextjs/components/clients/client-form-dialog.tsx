@@ -14,6 +14,7 @@ import {
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { clientsService, clientGroupsService, ApiError } from "@/services";
+import { toast } from "@/lib/toast";
 import type { Client, ClientGroup } from "@/services/types";
 
 interface ClientFormDialogProps {
@@ -134,12 +135,11 @@ export function ClientFormDialog({
       resetForm();
       setOpen(false);
       onSuccess();
+      toast.success(isEditing ? "Cliente atualizado!" : "Cliente cadastrado!");
     } catch (err) {
-      setError(
-        err instanceof ApiError
-          ? err.message
-          : "Não foi possível salvar o cliente.",
-      );
+      if (!(err instanceof ApiError)) {
+        setError("Não foi possível salvar o cliente.");
+      }
     } finally {
       setLoading(false);
     }

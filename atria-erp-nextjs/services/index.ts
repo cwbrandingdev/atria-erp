@@ -1,4 +1,5 @@
 export { apiRequest, ApiError, API_BASE_URL, uploadFile } from "./api";
+export { toast, showApiError } from "@/lib/toast";
 
 export * as authService from "./auth.service";
 export * as calendarService from "./calendar.service";

@@ -4,6 +4,7 @@ import {
   setAccessToken,
   setStoredUser,
 } from "@/lib/auth-storage";
+import { showApiError, shouldShowApiErrorToast } from "@/lib/toast";
 import type { AuthResponse } from "@/services/types";
 
 const API_BASE_URL =
@@ -25,6 +26,7 @@ export class ApiError extends Error {
 type RequestOptions = Omit<RequestInit, "body"> & {
   body?: unknown;
   skipAuth?: boolean;
+  skipToast?: boolean;
 };
 
 let refreshPromise: Promise<string | null> | null = null;
@@ -61,7 +63,7 @@ export async function apiRequest<T>(
   endpoint: string,
   options: RequestOptions = {},
 ): Promise<T> {
-  const { body, headers, skipAuth, ...rest } = options;
+  const { body, headers, skipAuth, skipToast, ...rest } = options;
 
   const makeRequest = async (token: string | null) => {
     return fetch(`${API_BASE_URL}${endpoint}`, {
@@ -98,11 +100,17 @@ export async function apiRequest<T>(
   if (!response.ok) {
     const message =
       (data as { message?: string | string[] })?.message ?? "Request failed";
-    throw new ApiError(
+    const error = new ApiError(
       Array.isArray(message) ? message.join(", ") : message,
       response.status,
       data,
     );
+
+    if (!skipToast && shouldShowApiErrorToast(response.status, endpoint)) {
+      showApiError(error, endpoint);
+    }
+
+    throw error;
   }
 
   return data as T;
@@ -111,6 +119,7 @@ export async function apiRequest<T>(
 export async function uploadFile<T>(
   endpoint: string,
   formData: FormData,
+  options: { skipToast?: boolean } = {},
 ): Promise<T> {
   const makeRequest = async (token: string | null) => {
     return fetch(`${API_BASE_URL}${endpoint}`, {
@@ -141,11 +150,17 @@ export async function uploadFile<T>(
   if (!response.ok) {
     const message =
       (data as { message?: string | string[] })?.message ?? "Upload failed";
-    throw new ApiError(
+    const error = new ApiError(
       Array.isArray(message) ? message.join(", ") : message,
       response.status,
       data,
     );
+
+    if (!options.skipToast && shouldShowApiErrorToast(response.status, endpoint)) {
+      showApiError(error, endpoint);
+    }
+
+    throw error;
   }
 
   return data as T;

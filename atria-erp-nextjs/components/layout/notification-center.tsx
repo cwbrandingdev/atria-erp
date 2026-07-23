@@ -63,15 +63,15 @@ export function NotificationCenter() {
         render={
           <Button
             variant="ghost"
-            size="icon"
-            className="relative text-[var(--atria-primary)]"
+            size="icon-sm"
+            className="relative text-[var(--atria-primary)] hover:bg-[var(--atria-primary)]/5"
             aria-label="Notificações"
           />
         }
       >
-        <Bell className="size-5" />
+        <Bell className="size-4" />
         {unreadCount > 0 && (
-          <span className="absolute -right-0.5 -top-0.5 flex size-4 items-center justify-center rounded-full bg-[var(--atria-accent)] text-[9px] font-bold text-[var(--atria-primary)]">
+          <span className="absolute right-1 top-1 flex size-4 items-center justify-center rounded-full bg-[#E8C39E] text-[9px] font-bold text-[#004949] ring-2 ring-[var(--atria-base)]">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}

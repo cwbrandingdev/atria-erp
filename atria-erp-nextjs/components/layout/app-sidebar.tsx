@@ -1,19 +1,17 @@
 "use client";
 
+import { SidebarBrand } from "./sidebar-brand";
 import { SidebarNav } from "./sidebar-nav";
 import { SidebarUserProfile } from "./sidebar-user-profile";
 
 export function AppSidebar() {
   return (
-    <aside className="sticky top-0 hidden h-screen w-72 shrink-0 flex-col bg-[var(--atria-primary)] text-white lg:flex">
-      <div className="border-b border-white/10 px-6 py-8">
-        <h1 className="text-2xl font-bold tracking-tight">ATRIA</h1>
-        <span className="text-xs font-medium text-[var(--atria-accent)]">
-          Admin Panel
-        </span>
+    <aside className="sidebar-scroll sticky top-0 hidden h-screen w-[17.5rem] shrink-0 flex-col border-r border-white/5 bg-gradient-to-b from-[#004949] via-[#004040] to-[#003535] text-white lg:flex">
+      <div className="shrink-0 border-b border-white/8 px-4 py-5">
+        <SidebarBrand />
       </div>
 
-      <div className="flex-1 overflow-y-auto px-4 py-6">
+      <div className="sidebar-scroll flex-1 overflow-y-auto px-2 py-4">
         <SidebarNav />
       </div>
 

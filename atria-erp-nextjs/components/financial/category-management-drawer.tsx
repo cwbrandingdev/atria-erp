@@ -18,6 +18,7 @@ import {
   PRESET_COLORS,
 } from "@/lib/financial-utils";
 import { financeService, ApiError } from "@/services";
+import { toast } from "@/lib/toast";
 import type { FinanceCategory } from "@/services/types";
 
 interface CategoryManagementDrawerProps {
@@ -94,12 +95,13 @@ export function CategoryManagementDrawer({
       resetForm();
       await loadCategories();
       onCategoriesChange();
-    } catch (err) {
-      setError(
-        err instanceof ApiError
-          ? err.message
-          : "Não foi possível salvar a categoria.",
+      toast.success(
+        editingId ? "Categoria atualizada" : "Categoria criada com sucesso",
       );
+    } catch (err) {
+      if (!(err instanceof ApiError)) {
+        setError("Não foi possível salvar a categoria.");
+      }
     } finally {
       setLoading(false);
     }

@@ -6,6 +6,7 @@ import {
   SheetHeader,
   SheetTitle,
 } from "@/components/ui/sheet";
+import { SidebarBrand } from "./sidebar-brand";
 import { SidebarNav } from "./sidebar-nav";
 import { SidebarUserProfile } from "./sidebar-user-profile";
 
@@ -19,19 +20,16 @@ export function MobileDrawer({ open, onOpenChange }: MobileDrawerProps) {
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="left"
-        className="flex w-72 flex-col border-none bg-[var(--atria-primary)] p-0 text-white"
+        className="sidebar-scroll flex w-[17.5rem] flex-col border-none bg-gradient-to-b from-[#004949] via-[#004040] to-[#003535] p-0 text-white"
         showCloseButton
       >
-        <SheetHeader className="shrink-0 border-b border-white/10 px-6 py-6">
+        <SheetHeader className="shrink-0 border-b border-white/8 px-4 py-5">
           <SheetTitle className="text-left text-white">
-            <span className="text-2xl font-bold tracking-tight">ATRIA</span>
-            <span className="mt-1 block text-xs font-medium text-[var(--atria-accent)]">
-              Admin Panel
-            </span>
+            <SidebarBrand />
           </SheetTitle>
         </SheetHeader>
 
-        <div className="flex-1 overflow-y-auto px-4 py-4">
+        <div className="sidebar-scroll flex-1 overflow-y-auto px-2 py-4">
           <SidebarNav onNavigate={() => onOpenChange(false)} />
         </div>
 

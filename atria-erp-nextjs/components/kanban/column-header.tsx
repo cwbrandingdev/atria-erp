@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { getColumnTypeLabel } from "@/lib/kanban-utils";
+import { toast } from "@/lib/toast";
 import { kanbanService, ApiError } from "@/services";
 import type { KanbanColumn } from "@/services/types";
 
@@ -42,12 +43,11 @@ export function ColumnHeader({ column, taskCount, onUpdate }: ColumnHeaderProps)
       await kanbanService.updateColumn(column.id, { title });
       setRenameOpen(false);
       onUpdate();
+      toast.success("Coluna atualizada");
     } catch (err) {
-      setError(
-        err instanceof ApiError
-          ? err.message
-          : "Não foi possível renomear a coluna.",
-      );
+      if (!(err instanceof ApiError)) {
+        setError("Não foi possível renomear a coluna.");
+      }
     } finally {
       setLoading(false);
     }
@@ -59,12 +59,11 @@ export function ColumnHeader({ column, taskCount, onUpdate }: ColumnHeaderProps)
     try {
       await kanbanService.deleteColumn(column.id);
       onUpdate();
+      toast.info("Coluna removida");
     } catch (err) {
-      alert(
-        err instanceof ApiError
-          ? err.message
-          : "Não foi possível excluir a coluna.",
-      );
+      if (!(err instanceof ApiError)) {
+        toast.error("Não foi possível excluir a coluna.");
+      }
     }
   }
 

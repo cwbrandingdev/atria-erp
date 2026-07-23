@@ -14,6 +14,7 @@ import {
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { financeService, ApiError } from "@/services";
+import { toast } from "@/lib/toast";
 import type { FinanceCategory, FinanceTransaction } from "@/services/types";
 
 interface TransactionDialogProps {
@@ -114,12 +115,17 @@ export function TransactionDialog({
       resetForm();
       setOpen(false);
       onSuccess();
-    } catch (err) {
-      setError(
-        err instanceof ApiError
-          ? err.message
-          : `Não foi possível ${isEdit ? "atualizar" : "criar"} a transação.`,
+      toast.success(
+        isEdit
+          ? "Lançamento atualizado com sucesso"
+          : "Lançamento registrado com sucesso",
       );
+    } catch (err) {
+      if (!(err instanceof ApiError)) {
+        setError(
+          `Não foi possível ${isEdit ? "atualizar" : "criar"} a transação.`,
+        );
+      }
     } finally {
       setLoading(false);
     }
