@@ -4,8 +4,12 @@ import type {
   ContentOverview,
   ContentPost,
   CreateContentPostInput,
+  CreatePostVersionInput,
   ContentPlatform,
   ContentPostStatus,
+  PostHistory,
+  PostVersion,
+  RejectContentPostInput,
 } from "./types";
 
 export async function getOverview(clientId?: string): Promise<ContentOverview> {
@@ -48,6 +52,40 @@ export async function getPosts(params?: {
   return apiRequest<ContentPost[]>(
     `/content/posts${query ? `?${query}` : ""}`,
   );
+}
+
+export async function getPost(id: string): Promise<ContentPost> {
+  return apiRequest<ContentPost>(`/content/posts/${id}`);
+}
+
+export async function getPostHistory(id: string): Promise<PostHistory> {
+  return apiRequest<PostHistory>(`/content/posts/${id}/history`);
+}
+
+export async function createPostVersion(
+  id: string,
+  data: CreatePostVersionInput,
+): Promise<PostVersion> {
+  return apiRequest<PostVersion>(`/content/posts/${id}/versions`, {
+    method: "POST",
+    body: data,
+  });
+}
+
+export async function approvePost(id: string): Promise<ContentPost> {
+  return apiRequest<ContentPost>(`/content/posts/${id}/approve`, {
+    method: "PATCH",
+  });
+}
+
+export async function rejectPost(
+  id: string,
+  data: RejectContentPostInput,
+): Promise<ContentPost> {
+  return apiRequest<ContentPost>(`/content/posts/${id}/reject`, {
+    method: "PATCH",
+    body: data,
+  });
 }
 
 export async function createPost(

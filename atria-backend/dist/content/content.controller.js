@@ -18,6 +18,7 @@ const current_user_decorator_1 = require("../auth/decorators/current-user.decora
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const content_service_1 = require("./content.service");
 const content_post_dto_1 = require("./dto/content-post.dto");
+const content_workflow_dto_1 = require("./dto/content-workflow.dto");
 let ContentController = class ContentController {
     contentService;
     constructor(contentService) {
@@ -32,11 +33,26 @@ let ContentController = class ContentController {
     getPosts(query) {
         return this.contentService.getPosts(query);
     }
+    getPostHistory(id) {
+        return this.contentService.getPostHistory(id);
+    }
+    getPost(id) {
+        return this.contentService.getPostById(id);
+    }
     createPost(user, dto) {
         return this.contentService.createPost(user.userId, dto);
     }
     updatePost(id, dto) {
         return this.contentService.updatePost(id, dto);
+    }
+    createVersion(id, user, dto) {
+        return this.contentService.createVersion(id, user.userId, dto);
+    }
+    approvePost(id) {
+        return this.contentService.approvePost(id);
+    }
+    rejectPost(id, user, dto) {
+        return this.contentService.rejectPost(id, user.userId, dto);
     }
     deletePost(id) {
         return this.contentService.deletePost(id);
@@ -67,6 +83,20 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ContentController.prototype, "getPosts", null);
 __decorate([
+    (0, common_1.Get)('posts/:id/history'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ContentController.prototype, "getPostHistory", null);
+__decorate([
+    (0, common_1.Get)('posts/:id'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ContentController.prototype, "getPost", null);
+__decorate([
     (0, common_1.Post)('posts'),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __param(1, (0, common_1.Body)()),
@@ -82,6 +112,31 @@ __decorate([
     __metadata("design:paramtypes", [String, content_post_dto_1.UpdateContentPostDto]),
     __metadata("design:returntype", void 0)
 ], ContentController.prototype, "updatePost", null);
+__decorate([
+    (0, common_1.Post)('posts/:id/versions'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, current_user_decorator_1.CurrentUser)()),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object, content_workflow_dto_1.CreatePostVersionDto]),
+    __metadata("design:returntype", void 0)
+], ContentController.prototype, "createVersion", null);
+__decorate([
+    (0, common_1.Patch)('posts/:id/approve'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ContentController.prototype, "approvePost", null);
+__decorate([
+    (0, common_1.Patch)('posts/:id/reject'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, current_user_decorator_1.CurrentUser)()),
+    __param(2, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object, content_workflow_dto_1.RejectContentPostDto]),
+    __metadata("design:returntype", void 0)
+], ContentController.prototype, "rejectPost", null);
 __decorate([
     (0, common_1.Delete)('posts/:id'),
     __param(0, (0, common_1.Param)('id')),

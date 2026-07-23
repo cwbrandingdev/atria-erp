@@ -20,6 +20,10 @@ import {
   QueryContentPostsDto,
   UpdateContentPostDto,
 } from './dto/content-post.dto';
+import {
+  CreatePostVersionDto,
+  RejectContentPostDto,
+} from './dto/content-workflow.dto';
 
 @Controller('content')
 @UseGuards(JwtAuthGuard)
@@ -45,6 +49,16 @@ export class ContentController {
     return this.contentService.getPosts(query);
   }
 
+  @Get('posts/:id/history')
+  getPostHistory(@Param('id') id: string) {
+    return this.contentService.getPostHistory(id);
+  }
+
+  @Get('posts/:id')
+  getPost(@Param('id') id: string) {
+    return this.contentService.getPostById(id);
+  }
+
   @Post('posts')
   createPost(
     @CurrentUser() user: AuthenticatedUser,
@@ -56,6 +70,29 @@ export class ContentController {
   @Patch('posts/:id')
   updatePost(@Param('id') id: string, @Body() dto: UpdateContentPostDto) {
     return this.contentService.updatePost(id, dto);
+  }
+
+  @Post('posts/:id/versions')
+  createVersion(
+    @Param('id') id: string,
+    @CurrentUser() user: AuthenticatedUser,
+    @Body() dto: CreatePostVersionDto,
+  ) {
+    return this.contentService.createVersion(id, user.userId, dto);
+  }
+
+  @Patch('posts/:id/approve')
+  approvePost(@Param('id') id: string) {
+    return this.contentService.approvePost(id);
+  }
+
+  @Patch('posts/:id/reject')
+  rejectPost(
+    @Param('id') id: string,
+    @CurrentUser() user: AuthenticatedUser,
+    @Body() dto: RejectContentPostDto,
+  ) {
+    return this.contentService.rejectPost(id, user.userId, dto);
   }
 
   @Delete('posts/:id')

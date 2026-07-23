@@ -189,6 +189,125 @@
   [data-sonner-toast][data-type="warning"].atria-toast {
     border-color: rgba(232, 195, 158, 0.35) !important;
   }
+
+  .login-orb {
+    animation: login-orb-drift 18s ease-in-out infinite;
+  }
+
+  .login-orb-delayed {
+    animation: login-orb-drift 22s ease-in-out infinite reverse;
+  }
+
+  .login-float {
+    animation: login-float 6s ease-in-out infinite;
+  }
+
+  .login-float-delayed {
+    animation: login-float 7.5s ease-in-out infinite;
+    animation-delay: 1.2s;
+  }
+
+  .login-pulse-ring {
+    animation: login-pulse-ring 4s ease-out infinite;
+  }
+
+  .login-form-shake {
+    animation: login-shake 0.55s cubic-bezier(0.36, 0.07, 0.19, 0.97);
+  }
+
+  .login-shimmer {
+    background-size: 200% 100%;
+    animation: login-shimmer 2.5s linear infinite;
+  }
+
+  .login-spinner-dot {
+    animation: login-spinner-dot 1.2s ease-in-out infinite;
+  }
+
+  .login-spinner-dot:nth-child(2) {
+    animation-delay: 0.15s;
+  }
+
+  .login-spinner-dot:nth-child(3) {
+    animation-delay: 0.3s;
+  }
+}
+
+@keyframes login-orb-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(24px, -18px) scale(1.05);
+  }
+  66% {
+    transform: translate(-16px, 12px) scale(0.95);
+  }
+}
+
+@keyframes login-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes login-pulse-ring {
+  0% {
+    transform: scale(0.92);
+    opacity: 0.45;
+  }
+  70%,
+  100% {
+    transform: scale(1.15);
+    opacity: 0;
+  }
+}
+
+@keyframes login-shake {
+  10%,
+  90% {
+    transform: translateX(-1px);
+  }
+  20%,
+  80% {
+    transform: translateX(2px);
+  }
+  30%,
+  50%,
+  70% {
+    transform: translateX(-4px);
+  }
+  40%,
+  60% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes login-shimmer {
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
+}
+
+@keyframes login-spinner-dot {
+  0%,
+  80%,
+  100% {
+    transform: scale(0.6);
+    opacity: 0.45;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @media print {

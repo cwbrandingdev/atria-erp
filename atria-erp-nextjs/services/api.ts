@@ -45,8 +45,9 @@ async function refreshAccessToken(): Promise<string | null> {
         if (!response.ok) return null;
 
         const data = (await response.json()) as AuthResponse;
-        setAccessToken(data.accessToken);
-        setStoredUser(data.user);
+        const remember = Boolean(localStorage.getItem("atria_access_token"));
+        setAccessToken(data.accessToken, remember);
+        setStoredUser(data.user, remember);
         return data.accessToken;
       } catch {
         return null;

@@ -45,6 +45,8 @@ model User {
   taskHistory        TaskHistory[]
   contentPosts    ContentPost[]
   assignedPosts   ContentPost[]          @relation("PostAssignee")
+  postVersions    PostVersion[]
+  postFeedback    PostFeedback[]
   contractsCreated Contract[]            @relation("ContractCreator")
   reportsGenerated ClientReport[]         @relation("ReportGenerator")
   notifications    Notification[]
@@ -259,8 +261,15 @@ enum ContentPlatform {
 enum ContentPostStatus {
   DRAFT
   PENDING_APPROVAL
+  APPROVED
+  REJECTED
   SCHEDULED
   PUBLISHED
+}
+
+enum PostFeedbackType {
+  REJECTION_REASON
+  GENERAL_NOTE
 }
 
 enum ContentPostFormat {
@@ -363,6 +372,8 @@ model ContentPost {
   assigneeId    String?
   assignee      User?               @relation("PostAssignee", fields: [assigneeId], references: [id])
   attachments   ContentAttachment[]
+  versions      PostVersion[]
+  feedback      PostFeedback[]
   createdAt     DateTime            @default(now())
   updatedAt     DateTime            @updatedAt
 
@@ -371,6 +382,41 @@ model ContentPost {
   @@index([scheduledDate])
   @@index([userId])
   @@index([clientId])
+}
+
+model PostVersion {
+  id            String         @id @default(uuid())
+  postId        String
+  post          ContentPost    @relation(fields: [postId], references: [id], onDelete: Cascade)
+  versionNumber Int
+  title         String
+  copyText      String         @db.Text
+  mediaUrls     String[]
+  createdById   String
+  createdBy     User           @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  createdAt     DateTime       @default(now())
+  feedback      PostFeedback[]
+
+  @@unique([postId, versionNumber])
+  @@index([postId])
+  @@index([createdById])
+}
+
+model PostFeedback {
+  id        String           @id @default(uuid())
+  postId    String
+  post      ContentPost      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  versionId String?
+  version   PostVersion?     @relation(fields: [versionId], references: [id], onDelete: SetNull)
+  userId    String
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  comment   String           @db.Text
+  type      PostFeedbackType
+  createdAt DateTime         @default(now())
+
+  @@index([postId])
+  @@index([versionId])
+  @@index([userId])
 }
 
 model ContentAttachment {
