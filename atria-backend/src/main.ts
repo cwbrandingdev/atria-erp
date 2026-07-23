@@ -16,7 +16,7 @@ async function bootstrap() {
 
   const corsOrigin = configService.get<string>(
     'CORS_ORIGIN',
-    'http://localhost:3000',
+    'https://atria-erp.vercel.app',
   );
 
   app.enableCors({
