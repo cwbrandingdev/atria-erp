@@ -7,6 +7,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUrl,
   IsUUID,
   MaxLength,
   Min,
@@ -43,6 +44,11 @@ export class CreateTaskDto {
   @IsUUID()
   @IsOptional()
   clientId?: string;
+
+  @IsOptional()
+  @IsUrl({ require_protocol: true })
+  @MaxLength(2048)
+  referenceUrl?: string;
 }
 
 export class UpdateTaskDto {
@@ -87,6 +93,11 @@ export class UpdateTaskDto {
   @IsUUID()
   @IsOptional()
   clientId?: string | null;
+
+  @IsOptional()
+  @IsUrl({ require_protocol: true })
+  @MaxLength(2048)
+  referenceUrl?: string | null;
 }
 
 export class MoveTaskDto {
@@ -103,4 +114,8 @@ export class QueryTasksDto {
   @IsOptional()
   @IsUUID()
   columnId?: string;
+
+  @IsOptional()
+  @IsUUID()
+  clientId?: string;
 }

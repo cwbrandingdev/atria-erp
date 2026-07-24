@@ -82,6 +82,32 @@ export declare class MetaInsightsService {
             engagement: number;
         }[];
     };
+    getPostInsights(postId: string, clientId: string): {
+        postId: string;
+        clientId: string;
+        reach: number;
+        impressions: number;
+        engagement: number;
+        engagementRate: number;
+        platform: "instagram";
+        isEstimated: boolean;
+    };
+    getClientInsights(clientId: string): {
+        reach: number;
+        impressions: number;
+        spend: number;
+        engagement: number;
+        engagementRate: number;
+        conversions: number;
+        roas: number;
+        activeCampaigns: number;
+        performanceChart: {
+            date: string;
+            spend: number;
+            reach: number;
+            engagement: number;
+        }[];
+    };
     private hashClientPeriod;
     private seededRandom;
     private buildCampaigns;

@@ -10,6 +10,7 @@ import {
   FileSignature,
   Settings,
   Wallet,
+  Sparkles,
   type LucideIcon,
 } from "lucide-react";
 
@@ -41,6 +42,7 @@ export const navSections: NavSection[] = [
         children: [
           { name: "Resumo / Dashboard Principal", href: "/dashboard" },
           { name: "Dashboard Financeiro", href: "/financial" },
+          { name: "Creation Command Center", href: "/creation" },
           { name: "Dashboard de Criação de Conteúdo", href: "/content" },
           { name: "Dashboard Meta Insights", href: "/insights" },
         ],
@@ -50,6 +52,7 @@ export const navSections: NavSection[] = [
   {
     label: "OPERAÇÃO",
     items: [
+      { name: "Criação", href: "/creation", icon: Sparkles },
       { name: "Kanban", href: "/kanban", icon: Kanban },
       { name: "Timesheet", href: "/timesheet", icon: Timer },
       { name: "Calendário", href: "/calendar", icon: Calendar },

@@ -63,6 +63,9 @@ let NotificationsService = class NotificationsService {
     async notifyPostPending(userIds, postTitle, clientName) {
         await this.createMany(userIds, client_1.NotificationType.POST_PENDING, 'Post aguardando aprovação', `"${postTitle}" de ${clientName} está pendente de aprovação`);
     }
+    async notifyPostRejected(userIds, postTitle, clientName, reason) {
+        await this.createMany(userIds, client_1.NotificationType.POST_REJECTED, 'Post rejeitado', `"${postTitle}" de ${clientName} foi rejeitado: ${reason.slice(0, 200)}`);
+    }
     async createMany(userIds, type, title, message) {
         const uniqueIds = [...new Set(userIds)].filter(Boolean);
         if (uniqueIds.length === 0)

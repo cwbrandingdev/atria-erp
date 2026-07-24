@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { AuthProvider } from "@/contexts/auth-context";
 import { AppearanceProvider } from "@/contexts/appearance-context";
+import { BrandingProvider } from "@/contexts/branding-context";
 import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
@@ -26,12 +27,14 @@ export default function RootLayout({
       className={`${inter.variable} ${inter.className} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col">
-        <AuthProvider>
-          <AppearanceProvider>
-            {children}
-            <Toaster />
-          </AppearanceProvider>
-        </AuthProvider>
+        <BrandingProvider>
+          <AuthProvider>
+            <AppearanceProvider>
+              {children}
+              <Toaster />
+            </AppearanceProvider>
+          </AuthProvider>
+        </BrandingProvider>
       </body>
     </html>
   );

@@ -9,7 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReportsModule = void 0;
 const common_1 = require("@nestjs/common");
 const meta_insights_module_1 = require("../meta-insights/meta-insights.module");
-const portal_controller_1 = require("./portal.controller");
+const portal_module_1 = require("../portal/portal.module");
 const reports_controller_1 = require("./reports.controller");
 const reports_service_1 = require("./reports.service");
 let ReportsModule = class ReportsModule {
@@ -17,8 +17,8 @@ let ReportsModule = class ReportsModule {
 exports.ReportsModule = ReportsModule;
 exports.ReportsModule = ReportsModule = __decorate([
     (0, common_1.Module)({
-        imports: [meta_insights_module_1.MetaInsightsModule],
-        controllers: [reports_controller_1.ReportsController, portal_controller_1.PortalController],
+        imports: [meta_insights_module_1.MetaInsightsModule, portal_module_1.PortalModule],
+        controllers: [reports_controller_1.ReportsController],
         providers: [reports_service_1.ReportsService],
         exports: [reports_service_1.ReportsService],
     })

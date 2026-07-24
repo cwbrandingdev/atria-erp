@@ -14,6 +14,7 @@ import {
   resetAppearanceToDefaults,
   type AppearanceSettings,
 } from "@/lib/theme-utils";
+import { applyBrandingToDocument } from "@/lib/branding-utils";
 import { settingsService } from "@/services";
 import { useAuth } from "@/contexts/auth-context";
 
@@ -39,9 +40,15 @@ export function AppearanceProvider({ children }: { children: React.ReactNode }) 
       const data = await settingsService.getAppearance();
       setAppearance(data);
       applyAppearanceToDocument(data);
+      try {
+        const branding = await settingsService.getBranding();
+        applyBrandingToDocument(branding);
+      } catch {
+        // branding already applied by BrandingProvider
+      }
     } catch {
       setAppearance(DEFAULT_APPEARANCE);
-      applyAppearanceToDocument(DEFAULT_APPEARANCE);
+      resetAppearanceToDefaults();
     } finally {
       setIsLoading(false);
     }
@@ -51,6 +58,12 @@ export function AppearanceProvider({ children }: { children: React.ReactNode }) 
     const saved = await settingsService.updateAppearance(settings);
     setAppearance(saved);
     applyAppearanceToDocument(saved);
+    try {
+      const branding = await settingsService.getBranding();
+      applyBrandingToDocument(branding);
+    } catch {
+      // ignore
+    }
   }, []);
 
   const setDraftAppearance = useCallback((settings: AppearanceSettings) => {

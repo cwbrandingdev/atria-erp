@@ -9,6 +9,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppModule = void 0;
 const common_1 = require("@nestjs/common");
 const config_1 = require("@nestjs/config");
+const ai_module_1 = require("./ai/ai.module");
 const assets_module_1 = require("./assets/assets.module");
 const auth_module_1 = require("./auth/auth.module");
 const calendar_module_1 = require("./calendar/calendar.module");
@@ -16,8 +17,11 @@ const client_groups_module_1 = require("./client-groups/client-groups.module");
 const clients_module_1 = require("./clients/clients.module");
 const contracts_module_1 = require("./contracts/contracts.module");
 const content_module_1 = require("./content/content.module");
+const creation_module_1 = require("./creation/creation.module");
 const dashboard_module_1 = require("./dashboard/dashboard.module");
+const portal_module_1 = require("./portal/portal.module");
 const finance_module_1 = require("./finance/finance.module");
+const integrations_module_1 = require("./integrations/integrations.module");
 const kanban_module_1 = require("./kanban/kanban.module");
 const meta_insights_module_1 = require("./meta-insights/meta-insights.module");
 const message_module_1 = require("./message/message.module");
@@ -38,6 +42,7 @@ exports.AppModule = AppModule = __decorate([
                 isGlobal: true,
             }),
             prisma_module_1.PrismaModule,
+            ai_module_1.AiModule,
             auth_module_1.AuthModule,
             assets_module_1.AssetsModule,
             calendar_module_1.CalendarModule,
@@ -45,12 +50,15 @@ exports.AppModule = AppModule = __decorate([
             client_groups_module_1.ClientGroupsModule,
             contracts_module_1.ContractsModule,
             content_module_1.ContentModule,
+            creation_module_1.CreationModule,
             dashboard_module_1.DashboardModule,
             finance_module_1.FinanceModule,
+            integrations_module_1.IntegrationsModule,
             kanban_module_1.KanbanModule,
             meta_insights_module_1.MetaInsightsModule,
             message_module_1.MessageModule,
             notifications_module_1.NotificationsModule,
+            portal_module_1.PortalModule,
             reports_module_1.ReportsModule,
             settings_module_1.SettingsModule,
             timesheet_module_1.TimesheetModule,

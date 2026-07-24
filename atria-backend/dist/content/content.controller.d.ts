@@ -36,13 +36,14 @@ export declare class ContentController {
         scheduledDate: string | null;
         status: "draft" | "pending_approval" | "approved" | "rejected" | "scheduled" | "published";
         copy: string;
+        referenceUrl: string | null;
         attachments: {
             id: string;
             createdAt: Date;
             name: string;
+            postId: string;
             url: string;
             mimeType: string | null;
-            postId: string;
         }[];
         author: {
             id: string;
@@ -58,6 +59,16 @@ export declare class ContentController {
         createdAt: string;
         updatedAt: string;
     }[]>;
+    getPostInsights(id: string): Promise<{
+        postId: string;
+        clientId: string;
+        reach: number;
+        impressions: number;
+        engagement: number;
+        engagementRate: number;
+        platform: "instagram";
+        isEstimated: boolean;
+    }>;
     getPostHistory(id: string): Promise<{
         versions: {
             id: string;
@@ -142,13 +153,14 @@ export declare class ContentController {
         scheduledDate: string | null;
         status: "draft" | "pending_approval" | "approved" | "rejected" | "scheduled" | "published";
         copy: string;
+        referenceUrl: string | null;
         attachments: {
             id: string;
             createdAt: Date;
             name: string;
+            postId: string;
             url: string;
             mimeType: string | null;
-            postId: string;
         }[];
         author: {
             id: string;
@@ -179,13 +191,14 @@ export declare class ContentController {
         scheduledDate: string | null;
         status: "draft" | "pending_approval" | "approved" | "rejected" | "scheduled" | "published";
         copy: string;
+        referenceUrl: string | null;
         attachments: {
             id: string;
             createdAt: Date;
             name: string;
+            postId: string;
             url: string;
             mimeType: string | null;
-            postId: string;
         }[];
         author: {
             id: string;
@@ -216,13 +229,14 @@ export declare class ContentController {
         scheduledDate: string | null;
         status: "draft" | "pending_approval" | "approved" | "rejected" | "scheduled" | "published";
         copy: string;
+        referenceUrl: string | null;
         attachments: {
             id: string;
             createdAt: Date;
             name: string;
+            postId: string;
             url: string;
             mimeType: string | null;
-            postId: string;
         }[];
         author: {
             id: string;
@@ -268,13 +282,14 @@ export declare class ContentController {
         scheduledDate: string | null;
         status: "draft" | "pending_approval" | "approved" | "rejected" | "scheduled" | "published";
         copy: string;
+        referenceUrl: string | null;
         attachments: {
             id: string;
             createdAt: Date;
             name: string;
+            postId: string;
             url: string;
             mimeType: string | null;
-            postId: string;
         }[];
         author: {
             id: string;
@@ -305,13 +320,14 @@ export declare class ContentController {
         scheduledDate: string | null;
         status: "draft" | "pending_approval" | "approved" | "rejected" | "scheduled" | "published";
         copy: string;
+        referenceUrl: string | null;
         attachments: {
             id: string;
             createdAt: Date;
             name: string;
+            postId: string;
             url: string;
             mimeType: string | null;
-            postId: string;
         }[];
         author: {
             id: string;

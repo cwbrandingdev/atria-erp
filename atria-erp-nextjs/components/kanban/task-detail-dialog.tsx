@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { ReferenceUrlField } from "@/components/ui/reference-url-field";
 import { TaskTimer } from "@/components/kanban/task-timer";
 import { getInitials, PRIORITY_LABELS } from "@/lib/kanban-utils";
 import { toast } from "@/lib/toast";
@@ -68,6 +69,7 @@ export function TaskDetailDialog({
   const [assigneeIds, setAssigneeIds] = useState<string[]>([]);
   const [clientId, setClientId] = useState("");
   const [dueDate, setDueDate] = useState("");
+  const [referenceUrl, setReferenceUrl] = useState("");
   const [totalLoggedSeconds, setTotalLoggedSeconds] = useState(0);
 
   useEffect(() => {
@@ -80,6 +82,7 @@ export function TaskDetailDialog({
     setAssigneeIds(task.assignees.map((a) => a.id));
     setClientId(task.clientId ?? "");
     setDueDate(task.dueDate ? task.dueDate.split("T")[0] : "");
+    setReferenceUrl(task.referenceUrl ?? "");
     setTotalLoggedSeconds(task.totalLoggedSeconds);
     setTab("details");
     setCommentText("");
@@ -131,6 +134,7 @@ export function TaskDetailDialog({
         assigneeIds,
         clientId: clientId || undefined,
         dueDate: dueDate ? new Date(dueDate).toISOString() : undefined,
+        referenceUrl: referenceUrl.trim() ? referenceUrl.trim() : null,
       });
       onUpdate();
       onOpenChange(false);
@@ -259,6 +263,12 @@ export function TaskDetailDialog({
                     className="w-full rounded-lg border border-input bg-transparent px-3 py-2 text-sm"
                   />
                 </Field>
+
+                <ReferenceUrlField
+                  id="detail-reference"
+                  value={referenceUrl}
+                  onChange={setReferenceUrl}
+                />
 
                 <div className="grid grid-cols-2 gap-3">
                   <Field>

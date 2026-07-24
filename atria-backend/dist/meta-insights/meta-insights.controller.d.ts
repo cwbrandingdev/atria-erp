@@ -34,6 +34,22 @@ export declare class MetaInsightsController {
         startDate: string;
         endDate: string | null;
     }[];
+    getClientInsights(clientId: string): {
+        reach: number;
+        impressions: number;
+        spend: number;
+        engagement: number;
+        engagementRate: number;
+        conversions: number;
+        roas: number;
+        activeCampaigns: number;
+        performanceChart: {
+            date: string;
+            spend: number;
+            reach: number;
+            engagement: number;
+        }[];
+    };
     updateCampaign(id: string, dto: UpdateCampaignStatusDto): {
         id: string;
         name: string;

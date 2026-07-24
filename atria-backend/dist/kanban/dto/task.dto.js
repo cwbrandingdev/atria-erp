@@ -21,6 +21,7 @@ class CreateTaskDto {
     dueDate;
     assigneeIds;
     clientId;
+    referenceUrl;
 }
 exports.CreateTaskDto = CreateTaskDto;
 __decorate([
@@ -60,6 +61,12 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], CreateTaskDto.prototype, "clientId", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsUrl)({ require_protocol: true }),
+    (0, class_validator_1.MaxLength)(2048),
+    __metadata("design:type", String)
+], CreateTaskDto.prototype, "referenceUrl", void 0);
 class UpdateTaskDto {
     title;
     description;
@@ -69,6 +76,7 @@ class UpdateTaskDto {
     assigneeIds;
     order;
     clientId;
+    referenceUrl;
 }
 exports.UpdateTaskDto = UpdateTaskDto;
 __decorate([
@@ -123,6 +131,12 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Object)
 ], UpdateTaskDto.prototype, "clientId", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsUrl)({ require_protocol: true }),
+    (0, class_validator_1.MaxLength)(2048),
+    __metadata("design:type", Object)
+], UpdateTaskDto.prototype, "referenceUrl", void 0);
 class MoveTaskDto {
     columnId;
     order;
@@ -140,6 +154,7 @@ __decorate([
 ], MoveTaskDto.prototype, "order", void 0);
 class QueryTasksDto {
     columnId;
+    clientId;
 }
 exports.QueryTasksDto = QueryTasksDto;
 __decorate([
@@ -147,4 +162,9 @@ __decorate([
     (0, class_validator_1.IsUUID)(),
     __metadata("design:type", String)
 ], QueryTasksDto.prototype, "columnId", void 0);
+__decorate([
+    (0, class_validator_1.IsOptional)(),
+    (0, class_validator_1.IsUUID)(),
+    __metadata("design:type", String)
+], QueryTasksDto.prototype, "clientId", void 0);
 //# sourceMappingURL=task.dto.js.map

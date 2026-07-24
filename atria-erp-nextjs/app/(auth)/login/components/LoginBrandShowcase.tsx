@@ -1,3 +1,5 @@
+"use client";
+
 import {
   BarChart3,
   CalendarDays,
@@ -9,6 +11,8 @@ import {
   Users,
   Wallet,
 } from "lucide-react";
+import { AgencyLogo } from "@/components/branding/agency-logo";
+import { useBranding } from "@/contexts/branding-context";
 
 const FEATURES = [
   { icon: Kanban, label: "Kanban & tarefas" },
@@ -42,8 +46,13 @@ const ACTIVITY = [
 ] as const;
 
 export function LoginBrandShowcase() {
+  const { branding } = useBranding();
+
   return (
-    <div className="relative hidden h-full min-h-svh overflow-hidden bg-[#004949] lg:flex lg:flex-col">
+    <div
+      className="relative hidden h-full min-h-svh overflow-hidden lg:flex lg:flex-col"
+      style={{ backgroundColor: branding.primaryColor }}
+    >
       <div
         className="pointer-events-none absolute inset-0 opacity-30"
         style={{
@@ -71,17 +80,12 @@ export function LoginBrandShowcase() {
 
       <div className="relative z-10 flex flex-1 flex-col px-10 py-8 xl:px-14 xl:py-10">
         <header className="mb-8 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="flex size-10 items-center justify-center rounded-xl bg-gradient-to-br from-[#E8C39E] to-[#d4a574] shadow-lg shadow-black/20">
-              <span className="text-base font-black text-[#004949]">A</span>
-            </div>
-            <div>
-              <p className="text-sm font-bold tracking-wide text-white">
-                ATRIA ERP
-              </p>
-              <p className="text-[11px] text-white/40">Workspace inteligente</p>
-            </div>
-          </div>
+          <AgencyLogo
+            size="md"
+            variant="sidebar"
+            subtitle="Workspace inteligente"
+            showName
+          />
 
           <div className="hidden items-center gap-2 rounded-full border border-[#E8C39E]/20 bg-white/5 px-3 py-1.5 text-[11px] font-medium text-[#E8C39E] backdrop-blur-sm xl:flex">
             <span className="relative flex size-2">

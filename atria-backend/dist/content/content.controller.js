@@ -33,6 +33,9 @@ let ContentController = class ContentController {
     getPosts(query) {
         return this.contentService.getPosts(query);
     }
+    getPostInsights(id) {
+        return this.contentService.getPostInsights(id);
+    }
     getPostHistory(id) {
         return this.contentService.getPostHistory(id);
     }
@@ -82,6 +85,13 @@ __decorate([
     __metadata("design:paramtypes", [content_post_dto_1.QueryContentPostsDto]),
     __metadata("design:returntype", void 0)
 ], ContentController.prototype, "getPosts", null);
+__decorate([
+    (0, common_1.Get)('posts/:id/insights'),
+    __param(0, (0, common_1.Param)('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], ContentController.prototype, "getPostInsights", null);
 __decorate([
     (0, common_1.Get)('posts/:id/history'),
     __param(0, (0, common_1.Param)('id')),

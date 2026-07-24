@@ -8,7 +8,7 @@ export declare class NotificationsController {
         userId: string;
         title: string;
         message: string;
-        type: "task_assigned" | "contract_signed" | "post_pending";
+        type: "task_assigned" | "contract_signed" | "post_pending" | "post_rejected";
         isRead: boolean;
         createdAt: string;
     }[]>;
@@ -21,7 +21,7 @@ export declare class NotificationsController {
         userId: string;
         title: string;
         message: string;
-        type: "task_assigned" | "contract_signed" | "post_pending";
+        type: "task_assigned" | "contract_signed" | "post_pending" | "post_rejected";
         isRead: boolean;
         createdAt: string;
     } | null>;

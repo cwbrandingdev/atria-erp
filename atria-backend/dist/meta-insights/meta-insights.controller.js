@@ -31,6 +31,9 @@ let MetaInsightsController = class MetaInsightsController {
     getCampaigns() {
         return this.metaInsightsService.getCampaigns();
     }
+    getClientInsights(clientId) {
+        return this.metaInsightsService.getClientInsights(clientId);
+    }
     updateCampaign(id, dto) {
         return this.metaInsightsService.updateCampaignStatus(id, dto.status);
     }
@@ -54,6 +57,13 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], MetaInsightsController.prototype, "getCampaigns", null);
+__decorate([
+    (0, common_1.Get)('client/:clientId'),
+    __param(0, (0, common_1.Param)('clientId')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], MetaInsightsController.prototype, "getClientInsights", null);
 __decorate([
     (0, common_1.Patch)('campaigns/:id'),
     __param(0, (0, common_1.Param)('id')),

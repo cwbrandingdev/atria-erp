@@ -127,8 +127,12 @@ export class KanbanService {
   }
 
   async getTasks(query: QueryTasksDto) {
+    const where: Prisma.KanbanTaskWhereInput = {};
+    if (query.columnId) where.columnId = query.columnId;
+    if (query.clientId) where.clientId = query.clientId;
+
     const tasks = await this.prisma.kanbanTask.findMany({
-      where: query.columnId ? { columnId: query.columnId } : undefined,
+      where: Object.keys(where).length > 0 ? where : undefined,
       include: this.taskInclude(),
       orderBy: [{ columnId: 'asc' }, { order: 'asc' }],
     });
@@ -177,6 +181,7 @@ export class KanbanService {
         description: dto.description,
         columnId: dto.columnId,
         clientId: dto.clientId,
+        referenceUrl: dto.referenceUrl,
         priority: dto.priority ?? KanbanTaskPriority.MEDIUM,
         dueDate: dto.dueDate ? new Date(dto.dueDate) : null,
         createdById: userId,
@@ -242,6 +247,8 @@ export class KanbanService {
           description: dto.description,
           columnId: dto.columnId,
           clientId: dto.clientId,
+          referenceUrl:
+            dto.referenceUrl !== undefined ? dto.referenceUrl : undefined,
           priority: dto.priority,
           order: dto.order,
           dueDate:
@@ -499,6 +506,7 @@ export class KanbanService {
       id: task.id,
       title: task.title,
       description: task.description,
+      referenceUrl: task.referenceUrl,
       columnId: task.columnId,
       column: this.toColumnResponse(task.column),
       clientId: task.clientId,

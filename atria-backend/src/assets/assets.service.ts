@@ -101,7 +101,7 @@ export class AssetsService {
   }
 
   async upload(
-    userId: string,
+    userId: string | null,
     dto: CreateAssetDto,
     file: Express.Multer.File,
   ) {
@@ -129,7 +129,7 @@ export class AssetsService {
         fileType: dto.fileType,
         fileUrl,
         fileSize: file.size,
-        uploadedById: userId,
+        uploadedById: userId ?? undefined,
       },
       include: assetInclude,
     });

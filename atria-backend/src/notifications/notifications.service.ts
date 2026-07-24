@@ -87,6 +87,20 @@ export class NotificationsService {
     );
   }
 
+  async notifyPostRejected(
+    userIds: string[],
+    postTitle: string,
+    clientName: string,
+    reason: string,
+  ) {
+    await this.createMany(
+      userIds,
+      NotificationType.POST_REJECTED,
+      'Post rejeitado',
+      `"${postTitle}" de ${clientName} foi rejeitado: ${reason.slice(0, 200)}`,
+    );
+  }
+
   private async createMany(
     userIds: string[],
     type: NotificationType,
@@ -123,7 +137,8 @@ export class NotificationsService {
       type: notification.type.toLowerCase() as
         | 'task_assigned'
         | 'contract_signed'
-        | 'post_pending',
+        | 'post_pending'
+        | 'post_rejected',
       isRead: notification.isRead,
       createdAt: notification.createdAt.toISOString(),
     };

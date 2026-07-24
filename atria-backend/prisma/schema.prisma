@@ -174,10 +174,11 @@ model KanbanColumn {
 }
 
 model KanbanTask {
-  id          String             @id @default(uuid())
-  title       String
-  description String?
-  priority    KanbanTaskPriority @default(MEDIUM)
+  id           String             @id @default(uuid())
+  title        String
+  description  String?
+  referenceUrl String?
+  priority     KanbanTaskPriority @default(MEDIUM)
   order       Int                @default(0)
   dueDate     DateTime?
   clientId    String?
@@ -304,6 +305,7 @@ model Client {
   contracts   Contract[]
   reports     ClientReport[]
   portalToken ClientPortalToken?
+  briefs      ClientBrief[]
   kanbanTasks KanbanTask[]
   assets      Asset[]
   calendarEvents CalendarEvent[]
@@ -362,6 +364,18 @@ model ClientPortalToken {
   updatedAt      DateTime  @updatedAt
 }
 
+model ClientBrief {
+  id        String   @id @default(uuid())
+  clientId  String
+  client    Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  title     String
+  content   String   @db.Text
+  source    String   @default("portal")
+  createdAt DateTime @default(now())
+
+  @@index([clientId, createdAt])
+}
+
 model ContentPost {
   id            String              @id @default(uuid())
   title         String
@@ -370,6 +384,7 @@ model ContentPost {
   scheduledDate DateTime?
   status        ContentPostStatus   @default(DRAFT)
   copy          String              @db.Text
+  referenceUrl  String?
   clientId      String
   client        Client              @relation(fields: [clientId], references: [id], onDelete: Cascade)
   userId        String
@@ -499,6 +514,7 @@ enum NotificationType {
   TASK_ASSIGNED
   CONTRACT_SIGNED
   POST_PENDING
+  POST_REJECTED
 }
 
 model Notification {
@@ -525,4 +541,18 @@ model UserSettings {
   textColor       String   @default("#0F172A")
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+}
+
+model AgencySettings {
+  id                    String   @id @default("default")
+  agencyName            String   @default("ATRIA ERP")
+  logoUrl               String?
+  faviconUrl            String?
+  primaryColor          String   @default("#004949")
+  accentColor           String   @default("#E8C39E")
+  slackWebhookUrl       String?
+  discordWebhookUrl     String?
+  notifyOnPostRejected  Boolean  @default(true)
+  notifyOnContractSigned Boolean @default(true)
+  updatedAt             DateTime @updatedAt
 }

@@ -12,13 +12,17 @@ import {
   type AuthenticatedUser,
 } from '../auth/decorators/current-user.decorator';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { PortalService } from '../portal/portal.service';
 import { GenerateReportDto, QueryReportsDto } from './dto/report.dto';
 import { ReportsService } from './reports.service';
 
 @Controller('reports')
 @UseGuards(JwtAuthGuard)
 export class ReportsController {
-  constructor(private readonly reportsService: ReportsService) {}
+  constructor(
+    private readonly reportsService: ReportsService,
+    private readonly portalService: PortalService,
+  ) {}
 
   @Get()
   findAll(@Query() query: QueryReportsDto) {
@@ -41,6 +45,6 @@ export class ReportsController {
 
   @Post('portal-token/:clientId')
   generatePortalToken(@Param('clientId') clientId: string) {
-    return this.reportsService.generatePortalToken(clientId);
+    return this.portalService.generatePortalToken(clientId);
   }
 }

@@ -47,8 +47,12 @@ export async function reorderColumns(
 
 export async function getTasks(params?: {
   columnId?: string;
+  clientId?: string;
 }): Promise<KanbanTask[]> {
-  const query = params?.columnId ? `?columnId=${params.columnId}` : "";
+  const search = new URLSearchParams();
+  if (params?.columnId) search.set("columnId", params.columnId);
+  if (params?.clientId) search.set("clientId", params.clientId);
+  const query = search.toString() ? `?${search.toString()}` : "";
   return apiRequest<KanbanTask[]>(`/kanban/tasks${query}`);
 }
 

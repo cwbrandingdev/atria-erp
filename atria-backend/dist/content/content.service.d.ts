@@ -1,11 +1,15 @@
 import { NotificationsService } from '../notifications/notifications.service';
+import { IntegrationsService } from '../integrations/integrations.service';
+import { MetaInsightsService } from '../meta-insights/meta-insights.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateContentPostDto, QueryContentPostsDto, UpdateContentPostDto } from './dto/content-post.dto';
 import { CreatePostVersionDto, RejectContentPostDto } from './dto/content-workflow.dto';
 export declare class ContentService {
     private readonly prisma;
     private readonly notifications;
-    constructor(prisma: PrismaService, notifications: NotificationsService);
+    private readonly integrations;
+    private readonly metaInsights;
+    constructor(prisma: PrismaService, notifications: NotificationsService, integrations: IntegrationsService, metaInsights: MetaInsightsService);
     getOverview(clientId?: string): Promise<{
         drafts: number;
         pendingApproval: number;
@@ -37,13 +41,14 @@ export declare class ContentService {
         scheduledDate: string | null;
         status: "draft" | "pending_approval" | "approved" | "rejected" | "scheduled" | "published";
         copy: string;
+        referenceUrl: string | null;
         attachments: {
             id: string;
             createdAt: Date;
             name: string;
+            postId: string;
             url: string;
             mimeType: string | null;
-            postId: string;
         }[];
         author: {
             id: string;
@@ -74,13 +79,14 @@ export declare class ContentService {
         scheduledDate: string | null;
         status: "draft" | "pending_approval" | "approved" | "rejected" | "scheduled" | "published";
         copy: string;
+        referenceUrl: string | null;
         attachments: {
             id: string;
             createdAt: Date;
             name: string;
+            postId: string;
             url: string;
             mimeType: string | null;
-            postId: string;
         }[];
         author: {
             id: string;
@@ -126,13 +132,14 @@ export declare class ContentService {
         scheduledDate: string | null;
         status: "draft" | "pending_approval" | "approved" | "rejected" | "scheduled" | "published";
         copy: string;
+        referenceUrl: string | null;
         attachments: {
             id: string;
             createdAt: Date;
             name: string;
+            postId: string;
             url: string;
             mimeType: string | null;
-            postId: string;
         }[];
         author: {
             id: string;
@@ -163,13 +170,14 @@ export declare class ContentService {
         scheduledDate: string | null;
         status: "draft" | "pending_approval" | "approved" | "rejected" | "scheduled" | "published";
         copy: string;
+        referenceUrl: string | null;
         attachments: {
             id: string;
             createdAt: Date;
             name: string;
+            postId: string;
             url: string;
             mimeType: string | null;
-            postId: string;
         }[];
         author: {
             id: string;
@@ -184,6 +192,16 @@ export declare class ContentService {
         platformColor: string;
         createdAt: string;
         updatedAt: string;
+    }>;
+    getPostInsights(postId: string): Promise<{
+        postId: string;
+        clientId: string;
+        reach: number;
+        impressions: number;
+        engagement: number;
+        engagementRate: number;
+        platform: "instagram";
+        isEstimated: boolean;
     }>;
     getPostHistory(postId: string): Promise<{
         versions: {
@@ -269,13 +287,14 @@ export declare class ContentService {
         scheduledDate: string | null;
         status: "draft" | "pending_approval" | "approved" | "rejected" | "scheduled" | "published";
         copy: string;
+        referenceUrl: string | null;
         attachments: {
             id: string;
             createdAt: Date;
             name: string;
+            postId: string;
             url: string;
             mimeType: string | null;
-            postId: string;
         }[];
         author: {
             id: string;
@@ -306,13 +325,14 @@ export declare class ContentService {
         scheduledDate: string | null;
         status: "draft" | "pending_approval" | "approved" | "rejected" | "scheduled" | "published";
         copy: string;
+        referenceUrl: string | null;
         attachments: {
             id: string;
             createdAt: Date;
             name: string;
+            postId: string;
             url: string;
             mimeType: string | null;
-            postId: string;
         }[];
         author: {
             id: string;

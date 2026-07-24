@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { ReferenceUrlField } from "@/components/ui/reference-url-field";
 import { calendarService, contentService, ApiError } from "@/services";
 import type {
   Client,
@@ -79,6 +80,7 @@ export function PostFormDialog({
       : "",
   );
   const [copy, setCopy] = useState(post?.copy ?? "");
+  const [referenceUrl, setReferenceUrl] = useState(post?.referenceUrl ?? "");
   const [attachments, setAttachments] = useState<
     { name: string; url: string }[]
   >(post?.attachments.map((a) => ({ name: a.name, url: a.url })) ?? []);
@@ -107,6 +109,7 @@ export function PostFormDialog({
           : "",
       );
       setCopy(post.copy);
+      setReferenceUrl(post.referenceUrl ?? "");
       setAttachments(
         post.attachments.map((a) => ({ name: a.name, url: a.url })),
       );
@@ -119,6 +122,7 @@ export function PostFormDialog({
       setAssigneeId("");
       setScheduledDate("");
       setCopy("");
+      setReferenceUrl("");
       setAttachments([]);
     }
     setError(null);
@@ -154,6 +158,7 @@ export function PostFormDialog({
       format,
       status,
       copy,
+      referenceUrl: referenceUrl.trim() ? referenceUrl.trim() : null,
       assigneeId: assigneeId || undefined,
       scheduledDate:
         scheduledDate && status !== "draft"
@@ -354,6 +359,13 @@ export function PostFormDialog({
               className="w-full rounded-lg border border-input bg-transparent px-2.5 py-2 text-sm"
             />
           </Field>
+
+          <ReferenceUrlField
+            id="post-reference"
+            label="Link de referência (Figma, Drive, etc.)"
+            value={referenceUrl}
+            onChange={setReferenceUrl}
+          />
 
           <div>
             <div className="mb-2 flex items-center justify-between">

@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useState } from "react";
 import Link from "next/link";
+import { AgencyLogo } from "@/components/branding/agency-logo";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff, Loader2, Lock, Mail } from "lucide-react";
 import { useAuth } from "@/contexts/auth-context";
@@ -142,21 +143,13 @@ export function LoginForm() {
   return (
     <div className="flex w-full flex-col">
       <div className="mb-8 flex flex-col items-center text-center lg:items-start lg:text-left">
-        <div className="mb-5 flex items-center gap-3">
-          <div className="relative flex size-12 items-center justify-center rounded-2xl bg-gradient-to-br from-[#E8C39E] to-[#d4a574] shadow-lg shadow-[#004949]/15 ring-1 ring-[#E8C39E]/30">
-            <span className="text-xl font-black tracking-tighter text-[#004949]">
-              A
-            </span>
-            <span className="absolute -bottom-0.5 -right-0.5 size-2.5 rounded-full border-2 border-[#004949] bg-emerald-400" />
-          </div>
-          <div className="text-left">
-            <p className="text-lg font-bold tracking-tight text-[var(--atria-primary)]">
-              ATRIA ERP
-            </p>
-            <p className="text-xs text-[var(--atria-primary)]/45">
-              Workspace inteligente
-            </p>
-          </div>
+        <div className="mb-5">
+          <AgencyLogo
+            size="lg"
+            variant="login"
+            subtitle="Workspace inteligente"
+            showName
+          />
         </div>
 
         <h1 className="text-2xl font-bold tracking-tight text-[var(--atria-primary)] sm:text-3xl">

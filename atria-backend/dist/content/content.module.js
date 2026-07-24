@@ -8,6 +8,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ContentModule = void 0;
 const common_1 = require("@nestjs/common");
+const meta_insights_module_1 = require("../meta-insights/meta-insights.module");
 const notifications_module_1 = require("../notifications/notifications.module");
 const content_controller_1 = require("./content.controller");
 const content_service_1 = require("./content.service");
@@ -16,9 +17,10 @@ let ContentModule = class ContentModule {
 exports.ContentModule = ContentModule;
 exports.ContentModule = ContentModule = __decorate([
     (0, common_1.Module)({
-        imports: [notifications_module_1.NotificationsModule],
+        imports: [notifications_module_1.NotificationsModule, meta_insights_module_1.MetaInsightsModule],
         controllers: [content_controller_1.ContentController],
         providers: [content_service_1.ContentService],
+        exports: [content_service_1.ContentService],
     })
 ], ContentModule);
 //# sourceMappingURL=content.module.js.map

@@ -51,7 +51,7 @@ export declare class AssetsService {
         } | null;
         uploadedAt: string;
     }>;
-    upload(userId: string, dto: CreateAssetDto, file: Express.Multer.File): Promise<{
+    upload(userId: string | null, dto: CreateAssetDto, file: Express.Multer.File): Promise<{
         id: string;
         clientId: string;
         client: {

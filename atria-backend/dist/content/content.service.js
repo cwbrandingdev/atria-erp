@@ -13,6 +13,8 @@ exports.ContentService = void 0;
 const common_1 = require("@nestjs/common");
 const client_1 = require("@prisma/client");
 const notifications_service_1 = require("../notifications/notifications.service");
+const integrations_service_1 = require("../integrations/integrations.service");
+const meta_insights_service_1 = require("../meta-insights/meta-insights.service");
 const prisma_service_1 = require("../prisma/prisma.service");
 const PLATFORM_COLORS = {
     INSTAGRAM: '#E1306C',
@@ -36,9 +38,13 @@ const postInclude = {
 let ContentService = class ContentService {
     prisma;
     notifications;
-    constructor(prisma, notifications) {
+    integrations;
+    metaInsights;
+    constructor(prisma, notifications, integrations, metaInsights) {
         this.prisma = prisma;
         this.notifications = notifications;
+        this.integrations = integrations;
+        this.metaInsights = metaInsights;
     }
     async getOverview(clientId) {
         const where = clientId ? { clientId } : {};
@@ -205,7 +211,20 @@ let ContentService = class ContentService {
                 },
             }),
         ]);
+        const recipients = [post.assigneeId, post.userId].filter((uid) => Boolean(uid));
+        await this.notifications.notifyPostRejected(recipients, post.title, post.client.companyName, dto.rejectionReason);
+        await this.integrations.notifyPostRejected({
+            postTitle: post.title,
+            clientName: post.client.companyName,
+            reason: dto.rejectionReason,
+            source: 'internal',
+            postId: post.id,
+        });
         return this.toPostResponse(post);
+    }
+    async getPostInsights(postId) {
+        const post = await this.ensurePostExists(postId);
+        return this.metaInsights.getPostInsights(postId, post.clientId);
     }
     async getPostHistory(postId) {
         await this.ensurePostExists(postId);
@@ -260,6 +279,7 @@ let ContentService = class ContentService {
                     : null,
                 status,
                 copy: dto.copy,
+                referenceUrl: dto.referenceUrl,
                 userId,
                 assigneeId: dto.assigneeId,
                 attachments: dto.attachments?.length
@@ -296,6 +316,7 @@ let ContentService = class ContentService {
                     : undefined,
                 status: dto.status,
                 copy: dto.copy,
+                referenceUrl: dto.referenceUrl !== undefined ? dto.referenceUrl : undefined,
                 assigneeId: dto.assigneeId !== undefined ? dto.assigneeId : undefined,
                 attachments: dto.attachments?.length
                     ? { create: dto.attachments }
@@ -350,6 +371,7 @@ let ContentService = class ContentService {
             scheduledDate: post.scheduledDate?.toISOString() ?? null,
             status: post.status.toLowerCase(),
             copy: post.copy,
+            referenceUrl: post.referenceUrl,
             attachments: post.attachments,
             author: post.user,
             assignee: post.assignee,
@@ -395,6 +417,8 @@ exports.ContentService = ContentService;
 exports.ContentService = ContentService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
-        notifications_service_1.NotificationsService])
+        notifications_service_1.NotificationsService,
+        integrations_service_1.IntegrationsService,
+        meta_insights_service_1.MetaInsightsService])
 ], ContentService);
 //# sourceMappingURL=content.service.js.map

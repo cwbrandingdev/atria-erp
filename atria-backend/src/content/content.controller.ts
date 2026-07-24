@@ -49,6 +49,11 @@ export class ContentController {
     return this.contentService.getPosts(query);
   }
 
+  @Get('posts/:id/insights')
+  getPostInsights(@Param('id') id: string) {
+    return this.contentService.getPostInsights(id);
+  }
+
   @Get('posts/:id/history')
   getPostHistory(@Param('id') id: string) {
     return this.contentService.getPostHistory(id);

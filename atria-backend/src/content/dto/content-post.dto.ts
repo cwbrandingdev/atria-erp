@@ -1,3 +1,4 @@
+import { IsUrl } from 'class-validator';
 import { Type } from 'class-transformer';
 import {
   IsArray,
@@ -61,6 +62,11 @@ export class CreateContentPostDto {
   @IsNotEmpty()
   copy: string;
 
+  @IsOptional()
+  @IsUrl({ require_protocol: true })
+  @MaxLength(2048)
+  referenceUrl?: string;
+
   @IsUUID()
   @IsOptional()
   assigneeId?: string;
@@ -101,6 +107,11 @@ export class UpdateContentPostDto {
   @IsString()
   @IsOptional()
   copy?: string;
+
+  @IsOptional()
+  @IsUrl({ require_protocol: true })
+  @MaxLength(2048)
+  referenceUrl?: string | null;
 
   @IsUUID()
   @IsOptional()

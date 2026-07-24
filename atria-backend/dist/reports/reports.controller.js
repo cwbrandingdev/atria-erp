@@ -16,12 +16,15 @@ exports.ReportsController = void 0;
 const common_1 = require("@nestjs/common");
 const current_user_decorator_1 = require("../auth/decorators/current-user.decorator");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
+const portal_service_1 = require("../portal/portal.service");
 const report_dto_1 = require("./dto/report.dto");
 const reports_service_1 = require("./reports.service");
 let ReportsController = class ReportsController {
     reportsService;
-    constructor(reportsService) {
+    portalService;
+    constructor(reportsService, portalService) {
         this.reportsService = reportsService;
+        this.portalService = portalService;
     }
     findAll(query) {
         return this.reportsService.findAll(query);
@@ -33,7 +36,7 @@ let ReportsController = class ReportsController {
         return this.reportsService.generateReport(user.userId, clientId, dto);
     }
     generatePortalToken(clientId) {
-        return this.reportsService.generatePortalToken(clientId);
+        return this.portalService.generatePortalToken(clientId);
     }
 };
 exports.ReportsController = ReportsController;
@@ -70,6 +73,7 @@ __decorate([
 exports.ReportsController = ReportsController = __decorate([
     (0, common_1.Controller)('reports'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    __metadata("design:paramtypes", [reports_service_1.ReportsService])
+    __metadata("design:paramtypes", [reports_service_1.ReportsService,
+        portal_service_1.PortalService])
 ], ReportsController);
 //# sourceMappingURL=reports.controller.js.map

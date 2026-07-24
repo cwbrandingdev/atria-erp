@@ -160,6 +160,7 @@ export interface KanbanTask {
   id: string;
   title: string;
   description: string | null;
+  referenceUrl: string | null;
   columnId: string;
   column: KanbanColumn;
   clientId: string | null;
@@ -191,6 +192,7 @@ export interface TaskHistoryEntry {
 export interface CreateTaskInput {
   title: string;
   description?: string;
+  referenceUrl?: string | null;
   columnId: string;
   priority?: KanbanPriority;
   dueDate?: string;
@@ -375,6 +377,195 @@ export interface CreateClientInput {
 
 export interface UpdateClientInput extends Partial<CreateClientInput> {}
 
+export type ClientHealthStatus = "healthy" | "attention" | "at_risk";
+
+export type Client360Section =
+  | "summary"
+  | "pipeline"
+  | "financial"
+  | "calendar"
+  | "assets"
+  | "tasks";
+
+export interface Client360Summary {
+  section: "summary";
+  client: Client & { assetCount: number; contractCount: number };
+  metrics: {
+    mrr: number;
+    activeContractsCount: number;
+    signedContractsCount: number;
+    openTasks: number;
+    pendingApprovals: number;
+    scheduledPosts: number;
+    overdueTasks: number;
+  };
+  health: ClientHealthStatus;
+  activeContracts: Array<{
+    id: string;
+    title: string;
+    status: ContractStatus;
+    recurringValue: number;
+    paymentFrequency: PaymentFrequency;
+    startDate: string;
+    endDate: string | null;
+  }>;
+  insights?: ClientInsights;
+}
+
+export interface Client360Pipeline {
+  section: "pipeline";
+  overview: {
+    drafts: number;
+    pendingApproval: number;
+    approved: number;
+    scheduled: number;
+    published: number;
+    rejected: number;
+    total: number;
+  };
+  posts: Array<{
+    id: string;
+    title: string;
+    platform: ContentPlatform;
+    format: ContentPostFormat;
+    status: ContentPostStatus;
+    scheduledDate: string | null;
+    copy: string;
+    attachmentCount: number;
+    previewUrl: string | null;
+    previewMimeType: string | null;
+    author: { id: string; name: string; avatarUrl: string | null };
+    assignee: { id: string; name: string; avatarUrl: string | null } | null;
+    updatedAt: string;
+    platformColor: string;
+  }>;
+  versionHistory: Array<{
+    id: string;
+    postId: string;
+    postTitle: string;
+    versionNumber: number;
+    title: string;
+    copyPreview: string;
+    mediaUrls: string[];
+    createdBy: { id: string; name: string; avatarUrl: string | null };
+    createdAt: string;
+  }>;
+}
+
+export interface Client360Financial {
+  section: "financial";
+  mrr: number;
+  contracts: Array<{
+    id: string;
+    title: string;
+    status: ContractStatus;
+    recurringValue: number;
+    paymentFrequency: PaymentFrequency;
+    startDate: string;
+    endDate: string | null;
+    pdfUrl: string | null;
+    receivablesCount: number;
+    updatedAt: string;
+  }>;
+  monthlyInvoicing: {
+    month: number;
+    year: number;
+    total: number;
+    paid: number;
+    pending: number;
+    items: Array<{
+      id: string;
+      description: string;
+      amount: number;
+      status: string;
+      date: string;
+      dueDate: string | null;
+      contractId: string | null;
+    }>;
+  };
+}
+
+export interface Client360CalendarItem {
+  id: string;
+  type: "event" | "post";
+  title: string;
+  category: string;
+  startAt: string;
+  endAt: string;
+  referenceUrl: string | null;
+  isPending: boolean;
+  color: string;
+  platform?: ContentPlatform;
+  format?: ContentPostFormat;
+  status?: ContentPostStatus | string;
+  assignee?: { id: string; name: string; avatarUrl: string | null } | null;
+}
+
+export interface Client360Calendar {
+  section: "calendar";
+  items: Client360CalendarItem[];
+  meetings: Client360CalendarItem[];
+  releases: Client360CalendarItem[];
+}
+
+export interface Client360AssetItem {
+  id: string;
+  fileName: string;
+  fileType: string;
+  fileUrl: string;
+  fileSize: number;
+  uploadedAt: string;
+  uploadedBy: { id: string; name: string; avatarUrl: string | null } | null;
+}
+
+export interface Client360Assets {
+  section: "assets";
+  referenceLinks: Array<{ label: string; url: string; type: string }>;
+  assets: Client360AssetItem[];
+  grouped: {
+    logo: Client360AssetItem[];
+    brand_guide: Client360AssetItem[];
+    image: Client360AssetItem[];
+    document: Client360AssetItem[];
+  };
+  totals: {
+    all: number;
+    logos: number;
+    brandGuides: number;
+    images: number;
+    documents: number;
+  };
+}
+
+export interface Client360Tasks {
+  section: "tasks";
+  tasks: Array<{
+    id: string;
+    title: string;
+    description: string | null;
+    referenceUrl: string | null;
+    priority: string;
+    dueDate: string | null;
+    column: {
+      id: string;
+      title: string;
+      type: string;
+      color: string;
+    };
+    assignees: { id: string; name: string; avatarUrl: string | null }[];
+    isOverdue: boolean;
+    updatedAt: string;
+  }>;
+}
+
+export type Client360Data =
+  | Client360Summary
+  | Client360Pipeline
+  | Client360Financial
+  | Client360Calendar
+  | Client360Assets
+  | Client360Tasks;
+
 export type ContractStatus =
   | "draft"
   | "sent"
@@ -455,6 +646,7 @@ export interface ContentPost {
   format: ContentPostFormat;
   scheduledDate: string | null;
   status: ContentPostStatus;
+  referenceUrl: string | null;
   copy: string;
   attachments: ContentAttachment[];
   author: { id: string; name: string; avatarUrl: string | null };
@@ -482,6 +674,130 @@ export interface ContentCalendarItem {
   color: string;
 }
 
+export type CreationDeliverableType = "post" | "task";
+export type BlockerSeverity = "red" | "amber";
+export type BlockerType =
+  | "overdue_task"
+  | "missing_assets"
+  | "unsigned_contract";
+
+export interface CreationDeliverableItem {
+  id: string;
+  type: CreationDeliverableType;
+  title: string;
+  clientId: string | null;
+  clientName: string;
+  clientAvatarUrl: string | null;
+  format: ContentPostFormat | null;
+  status: string;
+  platform: ContentPlatform | null;
+  scheduledDate: string | null;
+  dueDate: string | null;
+  columnTitle?: string;
+  priority?: string;
+  assignee?: { id: string; name: string; avatarUrl: string | null } | null;
+  assignees?: { id: string; name: string; avatarUrl: string | null }[];
+  updatedAt: string;
+}
+
+export interface CreationDeliverableGroup {
+  clientId: string;
+  clientName: string;
+  avatarUrl: string | null;
+  items: CreationDeliverableItem[];
+}
+
+export interface CreationApprovalItem {
+  id: string;
+  title: string;
+  clientId: string;
+  clientName: string;
+  clientAvatarUrl: string | null;
+  platform: ContentPlatform;
+  format: ContentPostFormat;
+  status: ContentPostStatus;
+  assignee: { id: string; name: string; avatarUrl: string | null } | null;
+  updatedAt: string;
+  scheduledDate: string | null;
+}
+
+export interface CreationScheduleItem {
+  id: string;
+  type: "post" | "event";
+  title: string;
+  clientId: string | null;
+  clientName: string;
+  platform: ContentPlatform | null;
+  format: ContentPostFormat | null;
+  status: string;
+  scheduledAt: string;
+  color: string;
+  referenceUrl?: string | null;
+}
+
+export interface CreationBlocker {
+  id: string;
+  severity: BlockerSeverity;
+  type: BlockerType;
+  title: string;
+  description: string;
+  clientId: string | null;
+  clientName: string;
+  dueDate: string | null;
+  href: string;
+}
+
+export interface CreationCommandCenter {
+  weekRange: { start: string; end: string };
+  deliverables: {
+    groups: CreationDeliverableGroup[];
+    summary: {
+      total: number;
+      byFormat: Record<string, number>;
+      byStatus: Record<string, number>;
+    };
+  };
+  approvalsQueue: CreationApprovalItem[];
+  publishingSchedule: CreationScheduleItem[];
+  blockers: CreationBlocker[];
+  stats: {
+    deliverablesThisWeek: number;
+    pendingApprovals: number;
+    scheduledReleases: number;
+    activeBlockers: number;
+  };
+}
+
+export interface BriefContentIdea {
+  title: string;
+  copy: string;
+  format: ContentPostFormat;
+  mediaConcept: string;
+  suggestedDate: string;
+}
+
+export interface BriefContentPlan {
+  clientId: string;
+  clientName: string;
+  summary: string;
+  platform: ContentPlatform;
+  ideas: BriefContentIdea[];
+  provider: "openai" | "gemini" | "fallback";
+}
+
+export interface CreateBriefPlanInput {
+  clientId: string;
+  platform: ContentPlatform;
+  ideas: BriefContentIdea[];
+  createKanbanTasks?: boolean;
+}
+
+export interface BriefPlanCreateResult {
+  created: { posts: number; tasks: number };
+  posts: unknown[];
+  tasks: unknown[];
+}
+
 export interface CreateContentPostInput {
   title: string;
   clientId: string;
@@ -489,9 +805,40 @@ export interface CreateContentPostInput {
   format?: ContentPostFormat;
   scheduledDate?: string;
   status?: ContentPostStatus;
+  referenceUrl?: string | null;
   copy: string;
   assigneeId?: string;
   attachments?: { name: string; url: string; mimeType?: string }[];
+}
+
+export interface PostInsights {
+  postId: string;
+  clientId: string;
+  reach: number;
+  impressions: number;
+  engagement: number;
+  engagementRate: number;
+  platform: ContentPlatform;
+  isEstimated: boolean;
+}
+
+export interface ClientInsights {
+  reach: number;
+  impressions: number;
+  spend: number;
+  engagement: number;
+  engagementRate: number;
+  conversions: number;
+  roas: number;
+  activeCampaigns: number;
+}
+
+export interface IntegrationSettings {
+  slackWebhookUrl: string | null;
+  discordWebhookUrl: string | null;
+  notifyOnPostRejected: boolean;
+  notifyOnContractSigned: boolean;
+  updatedAt: string;
 }
 
 export interface PostVersion {
@@ -700,6 +1047,12 @@ export interface ReportContentPost {
   scheduledDate: string | null;
   status: ContentPostStatus;
   copy?: string;
+  attachments?: Array<{
+    id: string;
+    name: string;
+    url: string;
+    mimeType: string | null;
+  }>;
 }
 
 export interface ReportActiveProject {
@@ -710,6 +1063,32 @@ export interface ReportActiveProject {
   paymentFrequency: PaymentFrequency;
   startDate: string;
   endDate: string | null;
+  pdfUrl?: string | null;
+  hasTerms?: boolean;
+}
+
+export interface PortalBrief {
+  id: string;
+  title: string;
+  content: string;
+  createdAt: string;
+}
+
+export interface PortalContractDetail {
+  id: string;
+  clientId: string;
+  client: Contract["client"];
+  title: string;
+  status: ContractStatus;
+  recurringValue: number;
+  paymentFrequency: PaymentFrequency;
+  startDate: string;
+  endDate: string | null;
+  termsContent: string;
+  pdfUrl: string | null;
+  createdBy: Contract["createdBy"];
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ReportData {
@@ -799,6 +1178,7 @@ export interface PortalData {
   scheduledPosts: ReportContentPost[];
   recentReports: PortalReportSummary[];
   contracts: ReportActiveProject[];
+  recentBriefs: PortalBrief[];
 }
 
 export interface TimeLog {

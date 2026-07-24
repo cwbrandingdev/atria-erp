@@ -17,7 +17,7 @@ export * as settingsService from "./settings.service";
 export * as usersService from "./users.service";
 export * as userGroupsService from "./user-groups.service";
 export * as contentService from "./content.service";
-export * as creationService from "./content.service";
+export * as creationService from "./creation.service";
 export * as insightsService from "./insights.service";
 export * as performanceService from "./insights.service";
 export * as dashboardService from "./dashboard.service";

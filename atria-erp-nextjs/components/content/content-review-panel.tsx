@@ -6,8 +6,10 @@ import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ContentStatusBadge } from "@/components/content/content-status-badge";
+import { PostInsightsCard } from "@/components/content/post-insights-card";
 import { RejectPostDialog } from "@/components/content/reject-post-dialog";
 import { VersionHistoryDrawer } from "@/components/content/version-history-drawer";
+import { ExternalLinkChip } from "@/components/ui/external-link-chip";
 import {
   formatContentDate,
   isMediaVideo,
@@ -159,6 +161,11 @@ export function ContentReviewPanel({
             <p className="text-sm text-[var(--atria-primary)]/50">
               {post.client.companyName} · {post.platform}
             </p>
+            {post.referenceUrl && (
+              <div className="mt-2">
+                <ExternalLinkChip url={post.referenceUrl} />
+              </div>
+            )}
           </div>
         </div>
 
@@ -181,6 +188,10 @@ export function ContentReviewPanel({
           </Button>
         </div>
       </div>
+
+      {(post.status === "published" || post.status === "scheduled") && (
+        <PostInsightsCard postId={post.id} />
+      )}
 
       <div className="grid grid-cols-1 gap-6 xl:grid-cols-[minmax(0,1fr)_320px]">
         <div className={LIQUID_GLASS_CLASS + " p-6"}>

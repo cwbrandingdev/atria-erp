@@ -4,7 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const links = [
+  { href: "/settings/branding", label: "Identidade" },
   { href: "/settings/appearance", label: "Aparência" },
+  { href: "/settings/integrations", label: "Integrações" },
   { href: "/settings/users", label: "Usuários" },
 ];
 

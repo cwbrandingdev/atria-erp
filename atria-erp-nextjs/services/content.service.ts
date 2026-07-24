@@ -8,6 +8,7 @@ import type {
   ContentPlatform,
   ContentPostStatus,
   PostHistory,
+  PostInsights,
   PostVersion,
   RejectContentPostInput,
 } from "./types";
@@ -60,6 +61,10 @@ export async function getPost(id: string): Promise<ContentPost> {
 
 export async function getPostHistory(id: string): Promise<PostHistory> {
   return apiRequest<PostHistory>(`/content/posts/${id}/history`);
+}
+
+export async function getPostInsights(id: string): Promise<PostInsights> {
+  return apiRequest<PostInsights>(`/content/posts/${id}/insights`);
 }
 
 export async function createPostVersion(

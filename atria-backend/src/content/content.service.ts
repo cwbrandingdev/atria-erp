@@ -5,6 +5,8 @@ import {
   Prisma,
 } from '@prisma/client';
 import { NotificationsService } from '../notifications/notifications.service';
+import { IntegrationsService } from '../integrations/integrations.service';
+import { MetaInsightsService } from '../meta-insights/meta-insights.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {
   CreateContentPostDto,
@@ -48,6 +50,8 @@ export class ContentService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notifications: NotificationsService,
+    private readonly integrations: IntegrationsService,
+    private readonly metaInsights: MetaInsightsService,
   ) {}
 
   async getOverview(clientId?: string) {
@@ -238,7 +242,29 @@ export class ContentService {
       }),
     ]);
 
+    const recipients = [post.assigneeId, post.userId].filter(
+      (uid): uid is string => Boolean(uid),
+    );
+    await this.notifications.notifyPostRejected(
+      recipients,
+      post.title,
+      post.client.companyName,
+      dto.rejectionReason,
+    );
+    await this.integrations.notifyPostRejected({
+      postTitle: post.title,
+      clientName: post.client.companyName,
+      reason: dto.rejectionReason,
+      source: 'internal',
+      postId: post.id,
+    });
+
     return this.toPostResponse(post);
+  }
+
+  async getPostInsights(postId: string) {
+    const post = await this.ensurePostExists(postId);
+    return this.metaInsights.getPostInsights(postId, post.clientId);
   }
 
   async getPostHistory(postId: string) {
@@ -302,6 +328,7 @@ export class ContentService {
           : null,
         status,
         copy: dto.copy,
+        referenceUrl: dto.referenceUrl,
         userId,
         assigneeId: dto.assigneeId,
         attachments: dto.attachments?.length
@@ -342,6 +369,8 @@ export class ContentService {
             : undefined,
         status: dto.status,
         copy: dto.copy,
+        referenceUrl:
+          dto.referenceUrl !== undefined ? dto.referenceUrl : undefined,
         assigneeId:
           dto.assigneeId !== undefined ? dto.assigneeId : undefined,
         attachments: dto.attachments?.length
@@ -423,6 +452,7 @@ export class ContentService {
         | 'scheduled'
         | 'published',
       copy: post.copy,
+      referenceUrl: post.referenceUrl,
       attachments: post.attachments,
       author: post.user,
       assignee: post.assignee,

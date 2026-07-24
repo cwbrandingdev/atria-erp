@@ -7,6 +7,8 @@ import {
   FREQUENCY_LABELS,
   STATUS_LABELS,
 } from "@/lib/contract-utils";
+import { useBranding } from "@/contexts/branding-context";
+import { AgencyLogo } from "@/components/branding/agency-logo";
 import type { Contract } from "@/services/types";
 
 interface ContractDocumentProps {
@@ -15,6 +17,7 @@ interface ContractDocumentProps {
 }
 
 export function ContractDocument({ contract, className }: ContractDocumentProps) {
+  const { branding } = useBranding();
   const address = formatClientAddress(contract.client);
   const scopeRows = [
     ["Valor", formatCurrency(contract.recurringValue)],
@@ -32,12 +35,12 @@ export function ContractDocument({ contract, className }: ContractDocumentProps)
       className={`contract-document bg-white text-[#1e293b] ${className ?? ""}`}
     >
       <header className="contract-document-header">
-        <p className="text-[11px] font-bold uppercase tracking-wide text-[#004949]">
-          ATRIA ERP
-        </p>
-        <p className="text-[9px] text-[#64748b]">
-          Gestão inteligente para agências e estúdios
-        </p>
+        <AgencyLogo
+          size="sm"
+          variant="login"
+          subtitle="Gestão inteligente para agências e estúdios"
+          showName
+        />
 
         <h1 className="mt-5 text-[20px] font-bold leading-tight text-[#004949]">
           {contract.title}
@@ -67,7 +70,7 @@ export function ContractDocument({ contract, className }: ContractDocumentProps)
           <PartyCard
             title="Contratada (Agência)"
             lines={[
-              "ATRIA ERP",
+              branding.agencyName,
               `Responsável: ${contract.createdBy.name}`,
               contract.createdBy.email
                 ? `E-mail: ${contract.createdBy.email}`
@@ -111,7 +114,7 @@ export function ContractDocument({ contract, className }: ContractDocumentProps)
             representative={contract.client.contactName ?? "Representante legal"}
           />
           <SignatureBlock
-            party="ATRIA ERP"
+            party={branding.agencyName}
             representative={contract.createdBy.name}
           />
         </div>

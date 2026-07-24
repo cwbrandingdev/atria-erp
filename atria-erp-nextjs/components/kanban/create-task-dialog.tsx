@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/dialog";
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { ReferenceUrlField } from "@/components/ui/reference-url-field";
 import { PRIORITY_LABELS } from "@/lib/kanban-utils";
 import { toast } from "@/lib/toast";
 import { calendarService, clientsService, kanbanService, ApiError } from "@/services";
@@ -42,6 +43,7 @@ export function CreateTaskDialog({
   const [assigneeIds, setAssigneeIds] = useState<string[]>([]);
   const [clientId, setClientId] = useState("");
   const [dueDate, setDueDate] = useState("");
+  const [referenceUrl, setReferenceUrl] = useState("");
 
   useEffect(() => {
     if (open) {
@@ -58,6 +60,7 @@ export function CreateTaskDialog({
     setAssigneeIds([]);
     setClientId("");
     setDueDate("");
+    setReferenceUrl("");
     setError(null);
   }
 
@@ -81,6 +84,7 @@ export function CreateTaskDialog({
         assigneeIds,
         clientId: clientId || undefined,
         dueDate: dueDate ? new Date(dueDate).toISOString() : undefined,
+        referenceUrl: referenceUrl.trim() || undefined,
       });
 
       resetForm();
@@ -146,6 +150,12 @@ export function CreateTaskDialog({
                 onChange={(e) => setDescription(e.target.value)}
               />
             </Field>
+
+            <ReferenceUrlField
+              id="task-reference"
+              value={referenceUrl}
+              onChange={setReferenceUrl}
+            />
 
             <Field>
               <FieldLabel htmlFor="task-client">Cliente</FieldLabel>

@@ -1,4 +1,5 @@
 import { FinanceService } from '../finance/finance.service';
+import { IntegrationsService } from '../integrations/integrations.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateContractDto, QueryContractsDto, UpdateContractDto } from './dto/contract.dto';
@@ -6,7 +7,8 @@ export declare class ContractsService {
     private readonly prisma;
     private readonly financeService;
     private readonly notifications;
-    constructor(prisma: PrismaService, financeService: FinanceService, notifications: NotificationsService);
+    private readonly integrations;
+    constructor(prisma: PrismaService, financeService: FinanceService, notifications: NotificationsService, integrations: IntegrationsService);
     findAll(query: QueryContractsDto): Promise<{
         id: string;
         clientId: string;
@@ -144,7 +146,7 @@ export declare class ContractsService {
         updatedAt: string;
     }>;
     remove(id: string): Promise<void>;
-    signContract(userId: string, id: string): Promise<{
+    signContract(userId: string, id: string, source?: 'portal' | 'internal'): Promise<{
         contract: {
             id: string;
             clientId: string;

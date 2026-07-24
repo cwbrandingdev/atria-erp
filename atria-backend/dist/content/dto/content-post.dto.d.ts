@@ -12,6 +12,7 @@ export declare class CreateContentPostDto {
     scheduledDate?: string;
     status?: ContentPostStatus;
     copy: string;
+    referenceUrl?: string;
     assigneeId?: string;
     attachments?: AttachmentDto[];
 }
@@ -23,6 +24,7 @@ export declare class UpdateContentPostDto {
     scheduledDate?: string | null;
     status?: ContentPostStatus;
     copy?: string;
+    referenceUrl?: string | null;
     assigneeId?: string | null;
     attachments?: AttachmentDto[];
 }

@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { ContractStatus, Prisma } from '@prisma/client';
 import { FinanceService } from '../finance/finance.service';
+import { IntegrationsService } from '../integrations/integrations.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {
@@ -45,6 +46,7 @@ export class ContractsService {
     private readonly prisma: PrismaService,
     private readonly financeService: FinanceService,
     private readonly notifications: NotificationsService,
+    private readonly integrations: IntegrationsService,
   ) {}
 
   async findAll(query: QueryContractsDto) {
@@ -126,7 +128,11 @@ export class ContractsService {
     await this.prisma.contract.delete({ where: { id } });
   }
 
-  async signContract(userId: string, id: string) {
+  async signContract(
+    userId: string,
+    id: string,
+    source: 'portal' | 'internal' = 'internal',
+  ) {
     const contract = await this.ensureExists(id);
 
     if (contract.status === ContractStatus.SIGNED) {
@@ -169,6 +175,13 @@ export class ContractsService {
       withClient.title,
       withClient.client.companyName,
     );
+
+    await this.integrations.notifyContractSigned({
+      contractTitle: withClient.title,
+      clientName: withClient.client.companyName,
+      contractId: withClient.id,
+      source,
+    });
 
     const updated = await this.ensureExists(id);
 

@@ -15,15 +15,22 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ClientsController = void 0;
 const common_1 = require("@nestjs/common");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
+const client_360_service_1 = require("./client-360.service");
 const clients_service_1 = require("./clients.service");
 const client_dto_1 = require("./dto/client.dto");
+const client_360_dto_1 = require("./dto/client-360.dto");
 let ClientsController = class ClientsController {
     clientsService;
-    constructor(clientsService) {
+    client360Service;
+    constructor(clientsService, client360Service) {
         this.clientsService = clientsService;
+        this.client360Service = client360Service;
     }
     findAll(clientGroupId) {
         return this.clientsService.findAll(clientGroupId);
+    }
+    getClient360(id, query) {
+        return this.client360Service.getSection(id, query.section ?? client_360_dto_1.Client360Section.SUMMARY);
     }
     findOne(id) {
         return this.clientsService.findOne(id);
@@ -46,6 +53,14 @@ __decorate([
     __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], ClientsController.prototype, "findAll", null);
+__decorate([
+    (0, common_1.Get)(':id/360'),
+    __param(0, (0, common_1.Param)('id')),
+    __param(1, (0, common_1.Query)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, client_360_dto_1.QueryClient360Dto]),
+    __metadata("design:returntype", void 0)
+], ClientsController.prototype, "getClient360", null);
 __decorate([
     (0, common_1.Get)(':id'),
     __param(0, (0, common_1.Param)('id')),
@@ -78,6 +93,7 @@ __decorate([
 exports.ClientsController = ClientsController = __decorate([
     (0, common_1.Controller)('clients'),
     (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
-    __metadata("design:paramtypes", [clients_service_1.ClientsService])
+    __metadata("design:paramtypes", [clients_service_1.ClientsService,
+        client_360_service_1.Client360Service])
 ], ClientsController);
 //# sourceMappingURL=clients.controller.js.map

@@ -40,6 +40,7 @@ export declare class KanbanService {
         id: string;
         title: string;
         description: string | null;
+        referenceUrl: string | null;
         columnId: string;
         column: {
             id: string;
@@ -75,6 +76,7 @@ export declare class KanbanService {
         id: string;
         title: string;
         description: string | null;
+        referenceUrl: string | null;
         columnId: string;
         column: {
             id: string;
@@ -110,6 +112,7 @@ export declare class KanbanService {
         id: string;
         title: string;
         description: string | null;
+        referenceUrl: string | null;
         columnId: string;
         column: {
             id: string;
@@ -145,6 +148,7 @@ export declare class KanbanService {
         id: string;
         title: string;
         description: string | null;
+        referenceUrl: string | null;
         columnId: string;
         column: {
             id: string;
@@ -180,6 +184,7 @@ export declare class KanbanService {
         id: string;
         title: string;
         description: string | null;
+        referenceUrl: string | null;
         columnId: string;
         column: {
             id: string;

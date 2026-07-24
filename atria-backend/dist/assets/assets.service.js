@@ -104,7 +104,7 @@ let AssetsService = class AssetsService {
                 fileType: dto.fileType,
                 fileUrl,
                 fileSize: file.size,
-                uploadedById: userId,
+                uploadedById: userId ?? undefined,
             },
             include: assetInclude,
         });

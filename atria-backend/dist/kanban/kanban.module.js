@@ -19,6 +19,7 @@ exports.KanbanModule = KanbanModule = __decorate([
         imports: [notifications_module_1.NotificationsModule],
         controllers: [kanban_controller_1.KanbanController],
         providers: [kanban_service_1.KanbanService],
+        exports: [kanban_service_1.KanbanService],
     })
 ], KanbanModule);
 //# sourceMappingURL=kanban.module.js.map

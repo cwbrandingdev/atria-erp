@@ -30,6 +30,11 @@ export class MetaInsightsController {
     return this.metaInsightsService.getCampaigns();
   }
 
+  @Get('client/:clientId')
+  getClientInsights(@Param('clientId') clientId: string) {
+    return this.metaInsightsService.getClientInsights(clientId);
+  }
+
   @Patch('campaigns/:id')
   updateCampaign(
     @Param('id') id: string,

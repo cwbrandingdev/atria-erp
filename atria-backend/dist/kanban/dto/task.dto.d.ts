@@ -7,6 +7,7 @@ export declare class CreateTaskDto {
     dueDate?: string;
     assigneeIds?: string[];
     clientId?: string;
+    referenceUrl?: string;
 }
 export declare class UpdateTaskDto {
     title?: string;
@@ -17,6 +18,7 @@ export declare class UpdateTaskDto {
     assigneeIds?: string[];
     order?: number;
     clientId?: string | null;
+    referenceUrl?: string | null;
 }
 export declare class MoveTaskDto {
     columnId: string;
@@ -24,4 +26,5 @@ export declare class MoveTaskDto {
 }
 export declare class QueryTasksDto {
     columnId?: string;
+    clientId?: string;
 }

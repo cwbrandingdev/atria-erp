@@ -96,6 +96,30 @@ let MetaInsightsService = class MetaInsightsService {
             performanceChart,
         };
     }
+    getPostInsights(postId, clientId) {
+        const seed = this.hashClientPeriod(clientId, postId.length, postId.charCodeAt(0) || 1);
+        const rng = this.seededRandom(seed ^ postId.length);
+        const reach = Math.round(800 + rng() * 4200);
+        const impressions = Math.round(reach * (1.6 + rng() * 0.8));
+        const engagement = Math.round(reach * (0.03 + rng() * 0.05));
+        const engagementRate = impressions > 0
+            ? Math.round((engagement / impressions) * 10000) / 100
+            : 0;
+        return {
+            postId,
+            clientId,
+            reach,
+            impressions,
+            engagement,
+            engagementRate,
+            platform: 'instagram',
+            isEstimated: true,
+        };
+    }
+    getClientInsights(clientId) {
+        const now = new Date();
+        return this.getClientMonthlyMetrics(clientId, now.getMonth() + 1, now.getFullYear());
+    }
     hashClientPeriod(clientId, month, year) {
         let hash = 0;
         const str = `${clientId}-${year}-${month}`;

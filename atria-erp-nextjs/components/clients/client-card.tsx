@@ -31,7 +31,10 @@ export function ClientCard({ client, onUpdate }: ClientCardProps) {
     <>
       <Card className="flex flex-col rounded-2xl border border-[var(--atria-primary)]/10 bg-white p-5">
         <div className="mb-4 flex items-start justify-between gap-3">
-          <div className="flex items-center gap-3">
+          <Link
+            href={`/clients/${client.id}`}
+            className="flex min-w-0 flex-1 items-center gap-3 transition-opacity hover:opacity-90"
+          >
             <Avatar className="size-12 border border-[var(--atria-accent)]/40">
               {client.avatarUrl && (
                 <AvatarImage src={client.avatarUrl} alt={client.companyName} />
@@ -40,7 +43,7 @@ export function ClientCard({ client, onUpdate }: ClientCardProps) {
                 {getInitials(client.companyName)}
               </AvatarFallback>
             </Avatar>
-            <div>
+            <div className="min-w-0">
               <h3 className="font-semibold text-[var(--atria-primary)]">
                 {client.companyName}
               </h3>
@@ -58,7 +61,7 @@ export function ClientCard({ client, onUpdate }: ClientCardProps) {
                 </div>
               )}
             </div>
-          </div>
+          </Link>
           <Button
             variant="ghost"
             size="icon-sm"

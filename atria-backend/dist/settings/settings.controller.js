@@ -14,14 +14,53 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SettingsController = void 0;
 const common_1 = require("@nestjs/common");
+const platform_express_1 = require("@nestjs/platform-express");
+const multer_1 = require("multer");
+const fs_1 = require("fs");
+const path_1 = require("path");
+const crypto_1 = require("crypto");
 const current_user_decorator_1 = require("../auth/decorators/current-user.decorator");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const appearance_dto_1 = require("./dto/appearance.dto");
+const branding_dto_1 = require("./dto/branding.dto");
+const integrations_dto_1 = require("./dto/integrations.dto");
 const settings_service_1 = require("./settings.service");
+const BRANDING_UPLOAD_DIR = (0, path_1.join)(process.cwd(), 'uploads', 'branding');
+const ALLOWED_IMAGE_TYPES = new Set([
+    'image/png',
+    'image/jpeg',
+    'image/jpg',
+    'image/webp',
+    'image/svg+xml',
+    'image/x-icon',
+    'image/vnd.microsoft.icon',
+]);
 let SettingsController = class SettingsController {
     settingsService;
     constructor(settingsService) {
         this.settingsService = settingsService;
+    }
+    getBranding() {
+        return this.settingsService.getBranding();
+    }
+    updateBranding(dto) {
+        return this.settingsService.updateBranding(dto);
+    }
+    getIntegrations() {
+        return this.settingsService.getIntegrations();
+    }
+    updateIntegrations(dto) {
+        return this.settingsService.updateIntegrations(dto);
+    }
+    uploadBrandingAsset(type, file) {
+        if (!type || !['logo', 'favicon'].includes(type)) {
+            throw new common_1.BadRequestException('Query param type must be logo or favicon');
+        }
+        if (!file) {
+            throw new common_1.BadRequestException('File is required');
+        }
+        const fileUrl = `/uploads/branding/${file.filename}`;
+        return this.settingsService.updateBrandingAsset(type, fileUrl);
     }
     getAppearance(user) {
         return this.settingsService.getAppearance(user.userId);
@@ -32,7 +71,68 @@ let SettingsController = class SettingsController {
 };
 exports.SettingsController = SettingsController;
 __decorate([
+    (0, common_1.Get)('branding'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], SettingsController.prototype, "getBranding", null);
+__decorate([
+    (0, common_1.Patch)('branding'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [branding_dto_1.UpdateBrandingDto]),
+    __metadata("design:returntype", void 0)
+], SettingsController.prototype, "updateBranding", null);
+__decorate([
+    (0, common_1.Get)('integrations'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], SettingsController.prototype, "getIntegrations", null);
+__decorate([
+    (0, common_1.Patch)('integrations'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    __param(0, (0, common_1.Body)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [integrations_dto_1.UpdateIntegrationsDto]),
+    __metadata("design:returntype", void 0)
+], SettingsController.prototype, "updateIntegrations", null);
+__decorate([
+    (0, common_1.Post)('branding/upload'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
+    (0, common_1.UseInterceptors)((0, platform_express_1.FileInterceptor)('file', {
+        storage: (0, multer_1.diskStorage)({
+            destination: (_req, _file, cb) => {
+                if (!(0, fs_1.existsSync)(BRANDING_UPLOAD_DIR)) {
+                    (0, fs_1.mkdirSync)(BRANDING_UPLOAD_DIR, { recursive: true });
+                }
+                cb(null, BRANDING_UPLOAD_DIR);
+            },
+            filename: (_req, file, cb) => {
+                const unique = `${(0, crypto_1.randomUUID)()}${(0, path_1.extname)(file.originalname)}`;
+                cb(null, unique);
+            },
+        }),
+        limits: { fileSize: 5 * 1024 * 1024 },
+        fileFilter: (_req, file, cb) => {
+            if (!ALLOWED_IMAGE_TYPES.has(file.mimetype)) {
+                cb(new common_1.BadRequestException('Invalid image type'), false);
+                return;
+            }
+            cb(null, true);
+        },
+    })),
+    __param(0, (0, common_1.Query)('type')),
+    __param(1, (0, common_1.UploadedFile)()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", void 0)
+], SettingsController.prototype, "uploadBrandingAsset", null);
+__decorate([
     (0, common_1.Get)('appearance'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
@@ -40,6 +140,7 @@ __decorate([
 ], SettingsController.prototype, "getAppearance", null);
 __decorate([
     (0, common_1.Patch)('appearance'),
+    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
     __param(1, (0, common_1.Body)()),
     __metadata("design:type", Function),
@@ -48,7 +149,6 @@ __decorate([
 ], SettingsController.prototype, "updateAppearance", null);
 exports.SettingsController = SettingsController = __decorate([
     (0, common_1.Controller)('settings'),
-    (0, common_1.UseGuards)(jwt_auth_guard_1.JwtAuthGuard),
     __metadata("design:paramtypes", [settings_service_1.SettingsService])
 ], SettingsController);
 //# sourceMappingURL=settings.controller.js.map

@@ -20,6 +20,7 @@ exports.ContractsModule = ContractsModule = __decorate([
         imports: [finance_module_1.FinanceModule, notifications_module_1.NotificationsModule],
         controllers: [contracts_controller_1.ContractsController],
         providers: [contracts_service_1.ContractsService],
+        exports: [contracts_service_1.ContractsService],
     })
 ], ContractsModule);
 //# sourceMappingURL=contracts.module.js.map

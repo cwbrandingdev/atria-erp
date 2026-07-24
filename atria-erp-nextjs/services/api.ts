@@ -170,7 +170,7 @@ export async function apiRequestBlob(
 export async function uploadFile<T>(
   endpoint: string,
   formData: FormData,
-  options: { skipToast?: boolean } = {},
+  options: { skipToast?: boolean; skipAuth?: boolean } = {},
 ): Promise<T> {
   const makeRequest = async (token: string | null) => {
     return fetch(`${API_BASE_URL}${endpoint}`, {
@@ -183,10 +183,10 @@ export async function uploadFile<T>(
     });
   };
 
-  let token = getAccessToken();
+  let token = options.skipAuth ? null : getAccessToken();
   let response = await makeRequest(token);
 
-  if (response.status === 401) {
+  if (response.status === 401 && !options.skipAuth) {
     const newToken = await refreshAccessToken();
     if (newToken) {
       token = newToken;

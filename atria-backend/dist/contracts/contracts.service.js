@@ -13,6 +13,7 @@ exports.ContractsService = void 0;
 const common_1 = require("@nestjs/common");
 const client_1 = require("@prisma/client");
 const finance_service_1 = require("../finance/finance.service");
+const integrations_service_1 = require("../integrations/integrations.service");
 const notifications_service_1 = require("../notifications/notifications.service");
 const prisma_service_1 = require("../prisma/prisma.service");
 const contractInclude = {
@@ -40,10 +41,12 @@ let ContractsService = class ContractsService {
     prisma;
     financeService;
     notifications;
-    constructor(prisma, financeService, notifications) {
+    integrations;
+    constructor(prisma, financeService, notifications, integrations) {
         this.prisma = prisma;
         this.financeService = financeService;
         this.notifications = notifications;
+        this.integrations = integrations;
     }
     async findAll(query) {
         const contracts = await this.prisma.contract.findMany({
@@ -108,7 +111,7 @@ let ContractsService = class ContractsService {
         }
         await this.prisma.contract.delete({ where: { id } });
     }
-    async signContract(userId, id) {
+    async signContract(userId, id, source = 'internal') {
         const contract = await this.ensureExists(id);
         if (contract.status === client_1.ContractStatus.SIGNED) {
             throw new common_1.BadRequestException('Contract is already signed');
@@ -133,6 +136,12 @@ let ContractsService = class ContractsService {
             select: { id: true },
         });
         await this.notifications.notifyContractSigned([withClient.createdById, ...adminUsers.map((u) => u.id)], withClient.title, withClient.client.companyName);
+        await this.integrations.notifyContractSigned({
+            contractTitle: withClient.title,
+            clientName: withClient.client.companyName,
+            contractId: withClient.id,
+            source,
+        });
         const updated = await this.ensureExists(id);
         return {
             contract: this.toResponse(updated),
@@ -180,6 +189,7 @@ exports.ContractsService = ContractsService = __decorate([
     (0, common_1.Injectable)(),
     __metadata("design:paramtypes", [prisma_service_1.PrismaService,
         finance_service_1.FinanceService,
-        notifications_service_1.NotificationsService])
+        notifications_service_1.NotificationsService,
+        integrations_service_1.IntegrationsService])
 ], ContractsService);
 //# sourceMappingURL=contracts.service.js.map

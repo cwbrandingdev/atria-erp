@@ -7,5 +7,6 @@ import { KanbanService } from './kanban.service';
   imports: [NotificationsModule],
   controllers: [KanbanController],
   providers: [KanbanService],
+  exports: [KanbanService],
 })
 export class KanbanModule {}
