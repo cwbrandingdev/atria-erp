@@ -8,7 +8,13 @@ import { TransactionsTable } from "@/components/financial/transactions-table";
 import { TransactionDialog } from "@/components/financial/transaction-dialog";
 import { CategoryManagementDrawer } from "@/components/financial/category-management-drawer";
 import { FiltersToolbar } from "@/components/financial/filters-toolbar";
+import { MonthSwitcher } from "@/components/financial/month-switcher";
 import { financeService } from "@/services";
+import {
+  getCurrentPeriod,
+  getMonthBounds,
+  type FinancePeriod,
+} from "@/lib/financial-utils";
 import type {
   FinanceCategory,
   FinanceOverview,
@@ -21,18 +27,23 @@ const emptyPaginated: PaginatedTransactions = {
   meta: { total: 0, page: 1, limit: 10, totalPages: 0 },
 };
 
-const defaultFilters: TransactionFilters = {
-  search: "",
-  categoryIds: [],
-  status: "",
-  type: "",
-  startDate: "",
-  endDate: "",
-  sortBy: "date",
-  sortOrder: "desc",
-};
+function buildDefaultFilters(period: FinancePeriod): TransactionFilters {
+  const { startDate, endDate } = getMonthBounds(period);
+
+  return {
+    search: "",
+    categoryIds: [],
+    status: "",
+    type: "",
+    startDate,
+    endDate,
+    sortBy: "date",
+    sortOrder: "desc",
+  };
+}
 
 export default function FinancialPage() {
+  const [period, setPeriod] = useState<FinancePeriod>(getCurrentPeriod);
   const [overview, setOverview] = useState<FinanceOverview | null>(null);
   const [categories, setCategories] = useState<FinanceCategory[]>([]);
   const [transactions, setTransactions] =
@@ -40,7 +51,9 @@ export default function FinancialPage() {
   const [loadingOverview, setLoadingOverview] = useState(true);
   const [loadingTransactions, setLoadingTransactions] = useState(true);
   const [page, setPage] = useState(1);
-  const [filters, setFilters] = useState<TransactionFilters>(defaultFilters);
+  const [filters, setFilters] = useState<TransactionFilters>(() =>
+    buildDefaultFilters(getCurrentPeriod()),
+  );
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
   useEffect(() => {
@@ -64,14 +77,17 @@ export default function FinancialPage() {
   const loadOverview = useCallback(async () => {
     setLoadingOverview(true);
     try {
-      const data = await financeService.getFinanceOverview();
+      const data = await financeService.getFinanceOverview({
+        month: period.month,
+        year: period.year,
+      });
       setOverview(data);
     } catch {
       setOverview(null);
     } finally {
       setLoadingOverview(false);
     }
-  }, []);
+  }, [period.month, period.year]);
 
   const transactionQuery = useMemo(
     () => ({
@@ -104,12 +120,24 @@ export default function FinancialPage() {
 
   useEffect(() => {
     void loadCategories();
+  }, [loadCategories]);
+
+  useEffect(() => {
     void loadOverview();
-  }, [loadCategories, loadOverview]);
+  }, [loadOverview]);
 
   useEffect(() => {
     void loadTransactions();
   }, [loadTransactions]);
+
+  function handlePeriodChange(nextPeriod: FinancePeriod) {
+    setPeriod(nextPeriod);
+    setPage(1);
+    setFilters((current) => ({
+      ...current,
+      ...getMonthBounds(nextPeriod),
+    }));
+  }
 
   function handleRefresh() {
     void loadCategories();
@@ -123,14 +151,14 @@ export default function FinancialPage() {
   }
 
   function handleClearFilters() {
-    setFilters(defaultFilters);
+    setFilters(buildDefaultFilters(period));
     setPage(1);
   }
 
   if (loadingOverview && !overview) {
     return (
       <div className="flex min-h-[50vh] items-center justify-center">
-        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[var(--atria-primary)] border-t-transparent" />
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-violet-500 border-t-transparent" />
       </div>
     );
   }
@@ -143,7 +171,7 @@ export default function FinancialPage() {
             Financeiro
           </h1>
           <p className="text-sm text-[var(--atria-primary)]/50">
-            Receitas, despesas e fluxo de caixa
+            Receitas, despesas e fluxo de caixa com visão mensal
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -152,11 +180,13 @@ export default function FinancialPage() {
         </div>
       </div>
 
+      <MonthSwitcher period={period} onChange={handlePeriodChange} />
+
       {overview && <KpiCards overview={overview} />}
 
       {overview && (
         <div className="grid grid-cols-1 gap-6 xl:grid-cols-2">
-          <CashFlowChart data={overview.monthlyCashFlow} />
+          <CashFlowChart data={overview.monthlyCashFlow} period={period} />
           <ExpenseDistributionChart data={overview.expenseByCategory} />
         </div>
       )}

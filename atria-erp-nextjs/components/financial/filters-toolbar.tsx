@@ -24,9 +24,7 @@ export function FiltersToolbar({
     filters.search ||
     filters.categoryIds.length > 0 ||
     filters.status ||
-    filters.type ||
-    filters.startDate ||
-    filters.endDate;
+    filters.type;
 
   function toggleCategory(categoryId: string) {
     const isSelected = filters.categoryIds.includes(categoryId);
@@ -63,7 +61,7 @@ export function FiltersToolbar({
                   status: e.target.value as TransactionFilters["status"],
                 })
               }
-              className="h-8 rounded-lg border border-[var(--atria-primary)]/20 bg-white px-2 text-sm text-[var(--atria-primary)]"
+              className="h-9 rounded-xl border border-amber-200 bg-amber-50/60 px-3 text-sm font-medium text-amber-800"
             >
               <option value="">Todos os status</option>
               {Object.entries(STATUS_LABELS).map(([value, label]) => (
@@ -81,31 +79,12 @@ export function FiltersToolbar({
                   type: e.target.value as TransactionFilters["type"],
                 })
               }
-              className="h-8 rounded-lg border border-[var(--atria-primary)]/20 bg-white px-2 text-sm text-[var(--atria-primary)]"
+              className="h-9 rounded-xl border border-violet-200 bg-violet-50/60 px-3 text-sm font-medium text-violet-800"
             >
               <option value="">Todos os tipos</option>
               <option value="income">Receita</option>
               <option value="expense">Despesa</option>
             </select>
-
-            <Input
-              type="date"
-              value={filters.startDate}
-              onChange={(e) =>
-                onChange({ ...filters, startDate: e.target.value })
-              }
-              className="w-auto"
-              aria-label="Data inicial"
-            />
-            <Input
-              type="date"
-              value={filters.endDate}
-              onChange={(e) =>
-                onChange({ ...filters, endDate: e.target.value })
-              }
-              className="w-auto"
-              aria-label="Data final"
-            />
 
             {hasActiveFilters && (
               <Button
@@ -113,10 +92,10 @@ export function FiltersToolbar({
                 variant="outline"
                 size="sm"
                 onClick={onClear}
-                className="border-[var(--atria-primary)]/20"
+                className="rounded-xl border-[var(--atria-primary)]/20"
               >
                 <X className="size-4" />
-                Limpar
+                Limpar filtros
               </Button>
             )}
           </div>

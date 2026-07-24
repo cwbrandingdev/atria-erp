@@ -22,6 +22,9 @@ import {
   TransactionSortField,
   UpdateTransactionDto,
 } from './dto/transaction.dto';
+import { QueryFinanceDto } from './dto/query-finance.dto';
+
+type FinancePeriodOptions = Pick<QueryFinanceDto, 'month' | 'year'>;
 
 type TransactionWithCategory = FinancialTransaction & {
   category: FinancialCategory;
@@ -73,14 +76,26 @@ export class FinanceService {
     await this.prisma.financialCategory.delete({ where: { id } });
   }
 
-  async getCashFlow(userId: string) {
+  async getCashFlow(userId: string, period?: FinancePeriodOptions) {
     const now = new Date();
-    const startOfYear = new Date(now.getFullYear(), 0, 1);
+    const year = period?.year ?? now.getFullYear();
+    const hasMonthFilter = period?.month !== undefined;
+    const month = period?.month ?? now.getMonth() + 1;
+
+    const startOfYear = new Date(year, 0, 1);
+    const endOfYear = new Date(year, 11, 31, 23, 59, 59, 999);
+
+    const periodStart = hasMonthFilter
+      ? new Date(year, month - 1, 1)
+      : startOfYear;
+    const periodEnd = hasMonthFilter
+      ? new Date(year, month, 0, 23, 59, 59, 999)
+      : endOfYear;
 
     const transactions = await this.prisma.financialTransaction.findMany({
       where: {
         userId,
-        date: { gte: startOfYear },
+        date: { gte: startOfYear, lte: endOfYear },
         status: { in: [TransactionStatus.PAID, TransactionStatus.PENDING] },
       },
       include: { category: true },
@@ -95,8 +110,8 @@ export class FinanceService {
 
     const monthlyMap = new Map<string, { income: number; expense: number }>();
 
-    for (let month = 0; month < 12; month++) {
-      const key = `${now.getFullYear()}-${String(month + 1).padStart(2, '0')}`;
+    for (let m = 0; m < 12; m++) {
+      const key = `${year}-${String(m + 1).padStart(2, '0')}`;
       monthlyMap.set(key, { income: 0, expense: 0 });
     }
 
@@ -123,24 +138,28 @@ export class FinanceService {
       const amount = Number(tx.amount);
       const monthKey = `${tx.date.getFullYear()}-${String(tx.date.getMonth() + 1).padStart(2, '0')}`;
       const monthData = monthlyMap.get(monthKey) ?? { income: 0, expense: 0 };
+      const inSelectedPeriod =
+        tx.date >= periodStart && tx.date <= periodEnd;
 
       if (tx.type === TransactionType.INCOME) {
         monthData.income += amount;
-        totalRevenue += amount;
+        if (inSelectedPeriod) totalRevenue += amount;
       } else {
         monthData.expense += amount;
-        totalExpenses += amount;
+        if (inSelectedPeriod) {
+          totalExpenses += amount;
 
-        const existing = categoryMap.get(tx.categoryId);
-        if (existing) {
-          existing.amount += amount;
-        } else {
-          categoryMap.set(tx.categoryId, {
-            categoryId: tx.categoryId,
-            categoryName: tx.category.name,
-            amount,
-            color: tx.category.color,
-          });
+          const existing = categoryMap.get(tx.categoryId);
+          if (existing) {
+            existing.amount += amount;
+          } else {
+            categoryMap.set(tx.categoryId, {
+              categoryId: tx.categoryId,
+              categoryName: tx.category.name,
+              amount,
+              color: tx.category.color,
+            });
+          }
         }
       }
 
@@ -168,14 +187,28 @@ export class FinanceService {
       pendingPayables,
       monthlyCashFlow,
       expenseByCategory: Array.from(categoryMap.values()),
+      period: {
+        month: hasMonthFilter ? month : null,
+        year,
+      },
     };
   }
 
-  async getOverview(userId: string) {
-    const cashFlow = await this.getCashFlow(userId);
+  async getOverview(userId: string, period?: FinancePeriodOptions) {
+    const cashFlow = await this.getCashFlow(userId, period);
+
+    const year = period?.year ?? new Date().getFullYear();
+    const month = period?.month ?? new Date().getMonth() + 1;
+    const startOfMonth = new Date(year, month - 1, 1);
+    const endOfMonth = new Date(year, month, 0, 23, 59, 59, 999);
 
     const recentTransactions = await this.prisma.financialTransaction.findMany({
-      where: { userId },
+      where: {
+        userId,
+        date: period?.month
+          ? { gte: startOfMonth, lte: endOfMonth }
+          : { gte: new Date(year, 0, 1) },
+      },
       include: { category: true },
       orderBy: { date: 'desc' },
       take: 5,

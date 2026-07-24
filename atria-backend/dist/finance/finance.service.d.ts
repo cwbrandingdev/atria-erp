@@ -2,6 +2,8 @@ import { Contract, Client, TransactionType } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
 import { CreateTransactionDto, QueryTransactionsDto, UpdateTransactionDto } from './dto/transaction.dto';
+import { QueryFinanceDto } from './dto/query-finance.dto';
+type FinancePeriodOptions = Pick<QueryFinanceDto, 'month' | 'year'>;
 export declare class FinanceService {
     private readonly prisma;
     constructor(prisma: PrismaService);
@@ -30,7 +32,7 @@ export declare class FinanceService {
         type: import("@prisma/client").$Enums.TransactionType;
     }>;
     deleteCategory(id: string): Promise<void>;
-    getCashFlow(userId: string): Promise<{
+    getCashFlow(userId: string, period?: FinancePeriodOptions): Promise<{
         totalRevenue: number;
         totalExpenses: number;
         netProfit: number;
@@ -48,8 +50,12 @@ export declare class FinanceService {
             amount: number;
             color: string;
         }[];
+        period: {
+            month: number | null;
+            year: number;
+        };
     }>;
-    getOverview(userId: string): Promise<{
+    getOverview(userId: string, period?: FinancePeriodOptions): Promise<{
         recentTransactions: {
             id: string;
             description: string;
@@ -80,6 +86,10 @@ export declare class FinanceService {
             amount: number;
             color: string;
         }[];
+        period: {
+            month: number | null;
+            year: number;
+        };
     }>;
     getTransactions(userId: string, query: QueryTransactionsDto): Promise<{
         data: {
@@ -152,3 +162,4 @@ export declare class FinanceService {
     private findUserTransaction;
     private toTransactionResponse;
 }
+export {};

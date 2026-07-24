@@ -19,17 +19,18 @@ const current_user_decorator_1 = require("../auth/decorators/current-user.decora
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const category_dto_1 = require("./dto/category.dto");
 const transaction_dto_1 = require("./dto/transaction.dto");
+const query_finance_dto_1 = require("./dto/query-finance.dto");
 const finance_service_1 = require("./finance.service");
 let FinanceController = class FinanceController {
     financeService;
     constructor(financeService) {
         this.financeService = financeService;
     }
-    getOverview(user) {
-        return this.financeService.getOverview(user.userId);
+    getOverview(user, query) {
+        return this.financeService.getOverview(user.userId, query);
     }
-    getCashFlow(user) {
-        return this.financeService.getCashFlow(user.userId);
+    getCashFlow(user, query) {
+        return this.financeService.getCashFlow(user.userId, query);
     }
     getCategories(type) {
         return this.financeService.getCategories(type);
@@ -60,15 +61,17 @@ exports.FinanceController = FinanceController;
 __decorate([
     (0, common_1.Get)('overview'),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, query_finance_dto_1.QueryFinanceDto]),
     __metadata("design:returntype", void 0)
 ], FinanceController.prototype, "getOverview", null);
 __decorate([
     (0, common_1.Get)('cash-flow'),
     __param(0, (0, current_user_decorator_1.CurrentUser)()),
+    __param(1, (0, common_1.Query)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, query_finance_dto_1.QueryFinanceDto]),
     __metadata("design:returntype", void 0)
 ], FinanceController.prototype, "getCashFlow", null);
 __decorate([

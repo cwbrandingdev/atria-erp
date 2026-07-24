@@ -21,6 +21,7 @@ import {
   QueryTransactionsDto,
   UpdateTransactionDto,
 } from './dto/transaction.dto';
+import { QueryFinanceDto } from './dto/query-finance.dto';
 import { FinanceService } from './finance.service';
 
 @Controller('finance')
@@ -29,13 +30,19 @@ export class FinanceController {
   constructor(private readonly financeService: FinanceService) {}
 
   @Get('overview')
-  getOverview(@CurrentUser() user: AuthenticatedUser) {
-    return this.financeService.getOverview(user.userId);
+  getOverview(
+    @CurrentUser() user: AuthenticatedUser,
+    @Query() query: QueryFinanceDto,
+  ) {
+    return this.financeService.getOverview(user.userId, query);
   }
 
   @Get('cash-flow')
-  getCashFlow(@CurrentUser() user: AuthenticatedUser) {
-    return this.financeService.getCashFlow(user.userId);
+  getCashFlow(
+    @CurrentUser() user: AuthenticatedUser,
+    @Query() query: QueryFinanceDto,
+  ) {
+    return this.financeService.getCashFlow(user.userId, query);
   }
 
   @Get('categories')

@@ -11,11 +11,22 @@ import type {
   UpdateCategoryInput,
 } from "./types";
 
-export async function getFinanceOverview(): Promise<FinanceOverview> {
-  return apiRequest<FinanceOverview>("/finance/overview");
+export async function getFinanceOverview(params?: {
+  month?: number;
+  year?: number;
+}): Promise<FinanceOverview> {
+  const query = new URLSearchParams();
+  if (params?.month) query.set("month", String(params.month));
+  if (params?.year) query.set("year", String(params.year));
+
+  const suffix = query.toString() ? `?${query.toString()}` : "";
+  return apiRequest<FinanceOverview>(`/finance/overview${suffix}`);
 }
 
-export async function getCashFlow(): Promise<
+export async function getCashFlow(params?: {
+  month?: number;
+  year?: number;
+}): Promise<
   Pick<
     FinanceOverview,
     | "totalRevenue"
@@ -28,7 +39,12 @@ export async function getCashFlow(): Promise<
     | "expenseByCategory"
   >
 > {
-  return apiRequest("/finance/cash-flow");
+  const query = new URLSearchParams();
+  if (params?.month) query.set("month", String(params.month));
+  if (params?.year) query.set("year", String(params.year));
+
+  const suffix = query.toString() ? `?${query.toString()}` : "";
+  return apiRequest(`/finance/cash-flow${suffix}`);
 }
 
 export async function getCategories(

@@ -229,6 +229,10 @@ export interface FinanceOverview {
     color: string;
   }[];
   recentTransactions: FinanceTransaction[];
+  period?: {
+    month: number | null;
+    year: number;
+  };
 }
 
 export interface FinanceTransaction {

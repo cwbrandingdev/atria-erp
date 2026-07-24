@@ -215,17 +215,27 @@ export function TransactionsTable({
                     </Badge>
                   </TableCell>
                   <TableCell
-                    className={`text-right font-medium ${
-                      tx.type === "income" ? "text-green-600" : "text-red-500"
+                    className={`text-right text-base font-bold ${
+                      tx.type === "income"
+                        ? "text-emerald-600 drop-shadow-[0_0_10px_rgba(16,185,129,0.25)]"
+                        : "text-red-600 drop-shadow-[0_0_10px_rgba(239,68,68,0.2)]"
                     }`}
                   >
-                    {tx.type === "expense" ? "−" : "+"}
-                    {formatCurrency(tx.amount)}
+                    <span
+                      className={`inline-flex rounded-lg px-2 py-1 ${
+                        tx.type === "income"
+                          ? "bg-emerald-50"
+                          : "bg-red-50"
+                      }`}
+                    >
+                      {tx.type === "expense" ? "−" : "+"}
+                      {formatCurrency(tx.amount)}
+                    </span>
                   </TableCell>
                   <TableCell>
                     <CategoryBadge
                       name={tx.category}
-                      color={tx.categoryColor ?? "#004949"}
+                      color={tx.categoryColor ?? "#8B5CF6"}
                     />
                   </TableCell>
                   <TableCell>

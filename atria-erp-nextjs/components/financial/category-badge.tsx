@@ -26,16 +26,18 @@ export function CategoryBadge({
       type={onClick ? "button" : undefined}
       onClick={onClick}
       className={cn(
-        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium transition-all",
+        "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold shadow-sm transition-all",
         onClick && "cursor-pointer hover:scale-105",
         selected
-          ? "border-[var(--atria-primary)] ring-2 ring-[var(--atria-primary)]/30"
+          ? "ring-2 ring-offset-1"
           : "border-transparent",
         className,
       )}
       style={{
         backgroundColor: color,
         color: textColor,
+        boxShadow: selected ? `0 0 0 3px ${color}33` : `0 4px 14px ${color}22`,
+        ...(selected ? { ringColor: color } : {}),
       }}
     >
       {name}

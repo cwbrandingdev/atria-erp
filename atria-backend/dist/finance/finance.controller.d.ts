@@ -2,11 +2,12 @@ import { TransactionType } from '@prisma/client';
 import { type AuthenticatedUser } from '../auth/decorators/current-user.decorator';
 import { CreateCategoryDto, UpdateCategoryDto } from './dto/category.dto';
 import { CreateTransactionDto, QueryTransactionsDto, UpdateTransactionDto } from './dto/transaction.dto';
+import { QueryFinanceDto } from './dto/query-finance.dto';
 import { FinanceService } from './finance.service';
 export declare class FinanceController {
     private readonly financeService;
     constructor(financeService: FinanceService);
-    getOverview(user: AuthenticatedUser): Promise<{
+    getOverview(user: AuthenticatedUser, query: QueryFinanceDto): Promise<{
         recentTransactions: {
             id: string;
             description: string;
@@ -37,8 +38,12 @@ export declare class FinanceController {
             amount: number;
             color: string;
         }[];
+        period: {
+            month: number | null;
+            year: number;
+        };
     }>;
-    getCashFlow(user: AuthenticatedUser): Promise<{
+    getCashFlow(user: AuthenticatedUser, query: QueryFinanceDto): Promise<{
         totalRevenue: number;
         totalExpenses: number;
         netProfit: number;
@@ -56,6 +61,10 @@ export declare class FinanceController {
             amount: number;
             color: string;
         }[];
+        period: {
+            month: number | null;
+            year: number;
+        };
     }>;
     getCategories(type?: TransactionType): Promise<{
         id: string;
