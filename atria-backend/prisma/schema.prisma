@@ -232,23 +232,27 @@ model TaskHistory {
 }
 
 model CalendarEvent {
-  id          String        @id @default(uuid())
-  title       String
-  description String?
-  startAt     DateTime
-  endAt       DateTime
-  category    EventCategory @default(MEETING)
-  color       String?
-  isPending   Boolean       @default(false)
-  createdById String
-  createdBy   User          @relation("EventCreator", fields: [createdById], references: [id])
-  assigneeId  String?
-  assignee    User?         @relation("EventAssignee", fields: [assigneeId], references: [id])
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  id           String        @id @default(uuid())
+  title        String
+  description  String?
+  startAt      DateTime
+  endAt        DateTime
+  category     EventCategory @default(MEETING)
+  color        String?
+  referenceUrl String?
+  isPending    Boolean       @default(false)
+  clientId     String?
+  client       Client?       @relation(fields: [clientId], references: [id], onDelete: SetNull)
+  createdById  String
+  createdBy    User          @relation("EventCreator", fields: [createdById], references: [id])
+  assigneeId   String?
+  assignee     User?         @relation("EventAssignee", fields: [assigneeId], references: [id])
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 
   @@index([startAt])
   @@index([assigneeId])
+  @@index([clientId])
 }
 
 enum ContentPlatform {
@@ -302,6 +306,7 @@ model Client {
   portalToken ClientPortalToken?
   kanbanTasks KanbanTask[]
   assets      Asset[]
+  calendarEvents CalendarEvent[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 

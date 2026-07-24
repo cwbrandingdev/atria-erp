@@ -90,6 +90,13 @@ export interface TeamMember {
   color?: string;
 }
 
+export interface CalendarEventClient {
+  id: string;
+  companyName: string;
+  avatarUrl: string | null;
+  color: string;
+}
+
 export interface CalendarEvent {
   id: string;
   title: string;
@@ -98,7 +105,10 @@ export interface CalendarEvent {
   endAt: string;
   category: "meeting" | "deadline" | "publish" | "other";
   color: string;
+  referenceUrl: string | null;
   isPending: boolean;
+  clientId: string | null;
+  client: CalendarEventClient | null;
   createdBy: TeamMember;
   assignee: TeamMember | null;
 }
@@ -112,6 +122,17 @@ export interface CreateCalendarEventInput {
   color?: string;
   isPending?: boolean;
   assigneeId?: string;
+  clientId?: string;
+  referenceUrl?: string;
+}
+
+export interface UpdateCalendarEventInput
+  extends Partial<
+    Omit<CreateCalendarEventInput, "assigneeId" | "clientId" | "referenceUrl">
+  > {
+  assigneeId?: string | null;
+  clientId?: string | null;
+  referenceUrl?: string | null;
 }
 
 export type KanbanPriority =

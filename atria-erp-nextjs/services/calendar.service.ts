@@ -3,6 +3,7 @@ import type {
   CalendarEvent,
   CreateCalendarEventInput,
   TeamMember,
+  UpdateCalendarEventInput,
 } from "./types";
 
 export async function getTeamMembers(): Promise<TeamMember[]> {
@@ -12,6 +13,7 @@ export async function getTeamMembers(): Promise<TeamMember[]> {
 export async function getEvents(params?: {
   from?: string;
   to?: string;
+  clientId?: string;
 }): Promise<CalendarEvent[]> {
   const query = new URLSearchParams(
     Object.entries(params ?? {})
@@ -38,7 +40,7 @@ export async function createEvent(
 
 export async function updateEvent(
   id: string,
-  data: Partial<CreateCalendarEventInput>,
+  data: UpdateCalendarEventInput,
 ): Promise<CalendarEvent> {
   const body: Record<string, unknown> = { ...data };
   if (data.category) body.category = data.category.toUpperCase();

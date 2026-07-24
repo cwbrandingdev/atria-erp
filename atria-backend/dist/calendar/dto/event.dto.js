@@ -21,6 +21,8 @@ class CreateEventDto {
     color;
     isPending;
     assigneeId;
+    clientId;
+    referenceUrl;
 }
 exports.CreateEventDto = CreateEventDto;
 __decorate([
@@ -64,6 +66,18 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], CreateEventDto.prototype, "assigneeId", void 0);
+__decorate([
+    (0, class_validator_1.IsUUID)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateEventDto.prototype, "clientId", void 0);
+__decorate([
+    (0, class_validator_1.ValidateIf)((_, value) => value !== undefined && value !== null && value !== ''),
+    (0, class_validator_1.IsUrl)({ require_protocol: true }),
+    (0, class_validator_1.MaxLength)(2048),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], CreateEventDto.prototype, "referenceUrl", void 0);
 class UpdateEventDto {
     title;
     description;
@@ -73,6 +87,8 @@ class UpdateEventDto {
     color;
     isPending;
     assigneeId;
+    clientId;
+    referenceUrl;
 }
 exports.UpdateEventDto = UpdateEventDto;
 __decorate([
@@ -118,9 +134,22 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", Object)
 ], UpdateEventDto.prototype, "assigneeId", void 0);
+__decorate([
+    (0, class_validator_1.IsUUID)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Object)
+], UpdateEventDto.prototype, "clientId", void 0);
+__decorate([
+    (0, class_validator_1.ValidateIf)((_, value) => value !== undefined && value !== null && value !== ''),
+    (0, class_validator_1.IsUrl)({ require_protocol: true }),
+    (0, class_validator_1.MaxLength)(2048),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", Object)
+], UpdateEventDto.prototype, "referenceUrl", void 0);
 class QueryEventsDto {
     from;
     to;
+    clientId;
 }
 exports.QueryEventsDto = QueryEventsDto;
 __decorate([
@@ -133,4 +162,9 @@ __decorate([
     (0, class_validator_1.IsOptional)(),
     __metadata("design:type", String)
 ], QueryEventsDto.prototype, "to", void 0);
+__decorate([
+    (0, class_validator_1.IsUUID)(),
+    (0, class_validator_1.IsOptional)(),
+    __metadata("design:type", String)
+], QueryEventsDto.prototype, "clientId", void 0);
 //# sourceMappingURL=event.dto.js.map

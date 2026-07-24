@@ -5,8 +5,10 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUrl,
   IsUUID,
   MaxLength,
+  ValidateIf,
 } from 'class-validator';
 import { EventCategory } from '@prisma/client';
 
@@ -43,6 +45,16 @@ export class CreateEventDto {
   @IsUUID()
   @IsOptional()
   assigneeId?: string;
+
+  @IsUUID()
+  @IsOptional()
+  clientId?: string;
+
+  @ValidateIf((_, value) => value !== undefined && value !== null && value !== '')
+  @IsUrl({ require_protocol: true })
+  @MaxLength(2048)
+  @IsOptional()
+  referenceUrl?: string;
 }
 
 export class UpdateEventDto {
@@ -80,6 +92,16 @@ export class UpdateEventDto {
   @IsUUID()
   @IsOptional()
   assigneeId?: string | null;
+
+  @IsUUID()
+  @IsOptional()
+  clientId?: string | null;
+
+  @ValidateIf((_, value) => value !== undefined && value !== null && value !== '')
+  @IsUrl({ require_protocol: true })
+  @MaxLength(2048)
+  @IsOptional()
+  referenceUrl?: string | null;
 }
 
 export class QueryEventsDto {
@@ -90,4 +112,8 @@ export class QueryEventsDto {
   @IsDateString()
   @IsOptional()
   to?: string;
+
+  @IsUUID()
+  @IsOptional()
+  clientId?: string;
 }

@@ -26,6 +26,29 @@ const MEMBER_COLORS = [
     '#8B7355',
     '#C4A882',
 ];
+const CLIENT_COLORS = [
+    '#8B5CF6',
+    '#06B6D4',
+    '#3B82F6',
+    '#F97316',
+    '#EC4899',
+    '#10B981',
+    '#F59E0B',
+    '#6366F1',
+    '#14B8A6',
+    '#EF4444',
+];
+const eventInclude = {
+    createdBy: { select: { id: true, name: true, avatarUrl: true } },
+    assignee: { select: { id: true, name: true, avatarUrl: true } },
+    client: {
+        select: {
+            id: true,
+            companyName: true,
+            avatarUrl: true,
+        },
+    },
+};
 let CalendarService = class CalendarService {
     prisma;
     constructor(prisma) {
@@ -50,17 +73,20 @@ let CalendarService = class CalendarService {
             if (query.to)
                 where.startAt.lte = new Date(query.to);
         }
+        if (query.clientId) {
+            where.clientId = query.clientId;
+        }
         const events = await this.prisma.calendarEvent.findMany({
             where,
-            include: {
-                createdBy: { select: { id: true, name: true, avatarUrl: true } },
-                assignee: { select: { id: true, name: true, avatarUrl: true } },
-            },
+            include: eventInclude,
             orderBy: { startAt: 'asc' },
         });
         return events.map((event) => this.toEventResponse(event));
     }
     async createEvent(userId, dto) {
+        if (dto.clientId) {
+            await this.ensureClientExists(dto.clientId);
+        }
         const event = await this.prisma.calendarEvent.create({
             data: {
                 title: dto.title,
@@ -69,19 +95,21 @@ let CalendarService = class CalendarService {
                 endAt: new Date(dto.endAt),
                 category: dto.category,
                 color: dto.color,
+                referenceUrl: dto.referenceUrl,
                 isPending: dto.isPending ?? false,
                 assigneeId: dto.assigneeId,
+                clientId: dto.clientId,
                 createdById: userId,
             },
-            include: {
-                createdBy: { select: { id: true, name: true, avatarUrl: true } },
-                assignee: { select: { id: true, name: true, avatarUrl: true } },
-            },
+            include: eventInclude,
         });
         return this.toEventResponse(event);
     }
     async updateEvent(id, dto) {
         await this.ensureEventExists(id);
+        if (dto.clientId) {
+            await this.ensureClientExists(dto.clientId);
+        }
         const event = await this.prisma.calendarEvent.update({
             where: { id },
             data: {
@@ -89,11 +117,12 @@ let CalendarService = class CalendarService {
                 startAt: dto.startAt ? new Date(dto.startAt) : undefined,
                 endAt: dto.endAt ? new Date(dto.endAt) : undefined,
                 assigneeId: dto.assigneeId === null ? null : dto.assigneeId,
+                clientId: dto.clientId === null ? null : dto.clientId,
+                referenceUrl: dto.referenceUrl === null || dto.referenceUrl === ''
+                    ? null
+                    : dto.referenceUrl,
             },
-            include: {
-                createdBy: { select: { id: true, name: true, avatarUrl: true } },
-                assignee: { select: { id: true, name: true, avatarUrl: true } },
-            },
+            include: eventInclude,
         });
         return this.toEventResponse(event);
     }
@@ -107,7 +136,23 @@ let CalendarService = class CalendarService {
             throw new common_1.NotFoundException('Event not found');
         return event;
     }
+    async ensureClientExists(id) {
+        const client = await this.prisma.client.findUnique({ where: { id } });
+        if (!client)
+            throw new common_1.NotFoundException('Client not found');
+        return client;
+    }
+    getClientColor(clientId) {
+        let hash = 0;
+        for (let i = 0; i < clientId.length; i++) {
+            hash = clientId.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return CLIENT_COLORS[Math.abs(hash) % CLIENT_COLORS.length];
+    }
     toEventResponse(event) {
+        const clientColor = event.client
+            ? this.getClientColor(event.client.id)
+            : null;
         return {
             id: event.id,
             title: event.title,
@@ -115,10 +160,21 @@ let CalendarService = class CalendarService {
             startAt: event.startAt.toISOString(),
             endAt: event.endAt.toISOString(),
             category: event.category.toLowerCase(),
-            color: event.color ??
+            color: clientColor ??
+                event.color ??
                 CATEGORY_COLORS[event.category] ??
                 '#004949',
+            referenceUrl: event.referenceUrl,
             isPending: event.isPending,
+            clientId: event.clientId,
+            client: event.client
+                ? {
+                    id: event.client.id,
+                    companyName: event.client.companyName,
+                    avatarUrl: event.client.avatarUrl,
+                    color: clientColor,
+                }
+                : null,
             createdBy: event.createdBy,
             assignee: event.assignee,
         };

@@ -18,16 +18,24 @@ export declare class CalendarService {
         endAt: string;
         category: string;
         color: string;
+        referenceUrl: string | null;
         isPending: boolean;
+        clientId: string | null;
+        client: {
+            id: string;
+            companyName: string;
+            avatarUrl: string | null;
+            color: string;
+        } | null;
         createdBy: {
             id: string;
-            name: string;
             avatarUrl: string | null;
+            name: string;
         };
         assignee: {
             id: string;
-            name: string;
             avatarUrl: string | null;
+            name: string;
         } | null;
     }[]>;
     createEvent(userId: string, dto: CreateEventDto): Promise<{
@@ -38,16 +46,24 @@ export declare class CalendarService {
         endAt: string;
         category: string;
         color: string;
+        referenceUrl: string | null;
         isPending: boolean;
+        clientId: string | null;
+        client: {
+            id: string;
+            companyName: string;
+            avatarUrl: string | null;
+            color: string;
+        } | null;
         createdBy: {
             id: string;
-            name: string;
             avatarUrl: string | null;
+            name: string;
         };
         assignee: {
             id: string;
-            name: string;
             avatarUrl: string | null;
+            name: string;
         } | null;
     }>;
     updateEvent(id: string, dto: UpdateEventDto): Promise<{
@@ -58,19 +74,29 @@ export declare class CalendarService {
         endAt: string;
         category: string;
         color: string;
+        referenceUrl: string | null;
         isPending: boolean;
+        clientId: string | null;
+        client: {
+            id: string;
+            companyName: string;
+            avatarUrl: string | null;
+            color: string;
+        } | null;
         createdBy: {
             id: string;
-            name: string;
             avatarUrl: string | null;
+            name: string;
         };
         assignee: {
             id: string;
-            name: string;
             avatarUrl: string | null;
+            name: string;
         } | null;
     }>;
     deleteEvent(id: string): Promise<void>;
     private ensureEventExists;
+    private ensureClientExists;
+    private getClientColor;
     private toEventResponse;
 }

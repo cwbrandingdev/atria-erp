@@ -8,6 +8,8 @@ export declare class CreateEventDto {
     color?: string;
     isPending?: boolean;
     assigneeId?: string;
+    clientId?: string;
+    referenceUrl?: string;
 }
 export declare class UpdateEventDto {
     title?: string;
@@ -18,8 +20,11 @@ export declare class UpdateEventDto {
     color?: string;
     isPending?: boolean;
     assigneeId?: string | null;
+    clientId?: string | null;
+    referenceUrl?: string | null;
 }
 export declare class QueryEventsDto {
     from?: string;
     to?: string;
+    clientId?: string;
 }

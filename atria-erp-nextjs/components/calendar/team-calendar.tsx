@@ -8,10 +8,12 @@ import {
   ChevronRight,
   Search,
 } from "lucide-react";
-import { calendarService } from "@/services";
-import type { CalendarEvent } from "@/services/types";
+import { calendarService, clientsService } from "@/services";
+import type { CalendarEvent, Client } from "@/services/types";
 import { CreateEventDialog } from "./create-event-dialog";
 import { EventDetailDialog } from "./event-detail-dialog";
+import { getClientCalendarColor, getEventDisplayColor } from "@/lib/calendar-utils";
+import { cn } from "@/lib/utils";
 
 const DAYS = ["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sáb"];
 const MONTHS = [
@@ -41,11 +43,20 @@ export function TeamCalendar() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [clients, setClients] = useState<Client[]>([]);
+  const [selectedClientId, setSelectedClientId] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [onlyPending, setOnlyPending] = useState(false);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [detailOpen, setDetailOpen] = useState(false);
+
+  useEffect(() => {
+    clientsService
+      .getClients()
+      .then(setClients)
+      .catch(() => setClients([]));
+  }, []);
 
   const loadEvents = useCallback(async () => {
     setLoading(true);
@@ -54,14 +65,18 @@ export function TeamCalendar() {
       const month = currentDate.getMonth();
       const from = new Date(year, month, 1).toISOString();
       const to = new Date(year, month + 1, 0, 23, 59, 59).toISOString();
-      const data = await calendarService.getEvents({ from, to });
+      const data = await calendarService.getEvents({
+        from,
+        to,
+        clientId: selectedClientId ?? undefined,
+      });
       setEvents(data);
     } catch {
       setEvents([]);
     } finally {
       setLoading(false);
     }
-  }, [currentDate]);
+  }, [currentDate, selectedClientId]);
 
   useEffect(() => {
     void loadEvents();
@@ -104,15 +119,11 @@ export function TeamCalendar() {
   }, [currentDate]);
 
   function prevMonth() {
-    setCurrentDate(
-      (d) => new Date(d.getFullYear(), d.getMonth() - 1, 1),
-    );
+    setCurrentDate((d) => new Date(d.getFullYear(), d.getMonth() - 1, 1));
   }
 
   function nextMonth() {
-    setCurrentDate(
-      (d) => new Date(d.getFullYear(), d.getMonth() + 1, 1),
-    );
+    setCurrentDate((d) => new Date(d.getFullYear(), d.getMonth() + 1, 1));
   }
 
   function openEvent(evt: CalendarEvent) {
@@ -157,7 +168,7 @@ export function TeamCalendar() {
             onClick={() => setOnlyPending(!onlyPending)}
             className={`flex items-center gap-2 rounded-lg border px-3 py-1.5 text-sm font-medium transition-colors ${
               onlyPending
-                ? "border-[var(--atria-accent)] bg-[var(--atria-accent)]/20 text-[var(--atria-primary)]"
+                ? "border-amber-300 bg-amber-50 text-amber-700"
                 : "border-[var(--atria-primary)]/20 text-[var(--atria-primary)]/70"
             }`}
           >
@@ -167,8 +178,63 @@ export function TeamCalendar() {
 
           <CreateEventDialog
             defaultDate={selectedDate}
+            defaultClientId={selectedClientId}
             onSuccess={() => void loadEvents()}
           />
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-[var(--atria-primary)]/10 bg-white p-4 shadow-sm">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-[var(--atria-primary)]/45">
+          Calendário por Cliente
+        </p>
+        <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          <button
+            type="button"
+            onClick={() => setSelectedClientId(null)}
+            className={cn(
+              "shrink-0 rounded-full border px-4 py-2 text-sm font-medium transition-all",
+              selectedClientId === null
+                ? "border-[var(--atria-primary)] bg-[var(--atria-primary)] text-white shadow-md"
+                : "border-[var(--atria-primary)]/15 bg-white text-[var(--atria-primary)]/70 hover:border-[var(--atria-primary)]/30",
+            )}
+          >
+            Todos os Clientes
+          </button>
+
+          {clients.map((client) => {
+            const color = getClientCalendarColor(client.id);
+            const isActive = selectedClientId === client.id;
+
+            return (
+              <button
+                key={client.id}
+                type="button"
+                onClick={() => setSelectedClientId(client.id)}
+                className={cn(
+                  "inline-flex shrink-0 items-center gap-2 rounded-full border px-4 py-2 text-sm font-medium transition-all",
+                  isActive
+                    ? "text-white shadow-md"
+                    : "bg-white text-[var(--atria-primary)]/75 hover:shadow-sm",
+                )}
+                style={
+                  isActive
+                    ? {
+                        backgroundColor: color,
+                        borderColor: color,
+                        boxShadow: `0 8px 24px ${color}44`,
+                      }
+                    : { borderColor: `${color}55` }
+                }
+              >
+                <span
+                  className="size-2.5 rounded-full"
+                  style={{ backgroundColor: color }}
+                />
+                {client.companyName}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -253,10 +319,15 @@ export function TeamCalendar() {
                         }}
                         role="button"
                         tabIndex={0}
-                        className="truncate rounded px-1.5 py-0.5 text-[10px] font-medium text-white"
+                        className="truncate rounded px-1.5 py-0.5 text-[10px] font-medium text-white shadow-sm"
                         style={{
-                          backgroundColor: evt.assignee?.color ?? evt.color,
+                          backgroundColor: getEventDisplayColor(evt),
                         }}
+                        title={
+                          evt.client
+                            ? `${evt.title} · ${evt.client.companyName}`
+                            : evt.title
+                        }
                       >
                         {evt.title}
                       </div>
@@ -298,14 +369,25 @@ export function TeamCalendar() {
               >
                 <span
                   className="h-10 w-1 shrink-0 rounded-full"
-                  style={{
-                    backgroundColor: evt.assignee?.color ?? evt.color,
-                  }}
+                  style={{ backgroundColor: getEventDisplayColor(evt) }}
                 />
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-[var(--atria-primary)]">
-                    {evt.title}
-                  </p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="text-sm font-medium text-[var(--atria-primary)]">
+                      {evt.title}
+                    </p>
+                    {evt.client && (
+                      <span
+                        className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
+                        style={{
+                          backgroundColor: `${evt.client.color}18`,
+                          color: evt.client.color,
+                        }}
+                      >
+                        {evt.client.companyName}
+                      </span>
+                    )}
+                  </div>
                   <p className="text-xs text-[var(--atria-primary)]/50">
                     {new Date(evt.startAt).toLocaleTimeString("pt-BR", {
                       hour: "2-digit",
@@ -319,7 +401,7 @@ export function TeamCalendar() {
                   </p>
                 </div>
                 {evt.isPending && (
-                  <span className="rounded-full bg-[var(--atria-accent)]/30 px-2 py-0.5 text-[10px] font-medium text-[var(--atria-primary)]">
+                  <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-700">
                     Pendente
                   </span>
                 )}
@@ -334,6 +416,7 @@ export function TeamCalendar() {
         open={detailOpen}
         onOpenChange={setDetailOpen}
         onDeleted={() => void loadEvents()}
+        onUpdated={() => void loadEvents()}
       />
     </div>
   );
