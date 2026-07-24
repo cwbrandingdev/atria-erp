@@ -14,27 +14,58 @@ async function bootstrap() {
   app.useStaticAssets(join(process.cwd(), 'uploads'), { prefix: '/uploads/' });
   app.use(cookieParser());
 
-  const corsOrigin = configService.get<string>(
-    'CORS_ORIGIN',
-    'https://atria-erp.vercel.app',
+  const isProduction = process.env.NODE_ENV === 'production';
+  const defaultOrigins = isProduction
+    ? 'https://atria-erp.vercel.app'
+    : 'http://localhost:3000,http://127.0.0.1:3000';
+
+  const corsOrigin = configService.get<string>('CORS_ORIGIN', defaultOrigins);
+
+  const allowedOrigins = new Set(
+    corsOrigin
+      .split(',')
+      .map((origin) =>
+        origin
+          .trim()
+          .replace(/^["']|["']$/g, '')
+          .replace(/\/$/, ''),
+      )
+      .filter(Boolean),
   );
 
-  const allowedOrigins = corsOrigin
-    .split(',')
-    .map((origin) => origin.trim().replace(/\/$/, ''));
+  if (!isProduction) {
+    allowedOrigins.add('http://localhost:3000');
+    allowedOrigins.add('http://127.0.0.1:3000');
+  }
 
   app.enableCors({
     origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error(`CORS blocked for origin: ${origin}`));
+      if (!origin || allowedOrigins.has(origin)) {
+        callback(null, origin ?? true);
+        return;
       }
+
+      console.warn(`[CORS] Blocked origin: ${origin}`);
+      callback(null, false);
     },
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Requested-With',
+      'Accept',
+      'Origin',
+    ],
     credentials: true,
+    optionsSuccessStatus: 204,
   });
+
+  if (!isProduction) {
+    console.log(
+      `[CORS] Allowed origins: ${[...allowedOrigins].join(', ')}`,
+    );
+  }
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,

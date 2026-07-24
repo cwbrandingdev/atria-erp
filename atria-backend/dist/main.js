@@ -15,12 +15,45 @@ async function bootstrap() {
     const configService = app.get(config_1.ConfigService);
     app.useStaticAssets((0, path_1.join)(process.cwd(), 'uploads'), { prefix: '/uploads/' });
     app.use((0, cookie_parser_1.default)());
-    const corsOrigin = configService.get('CORS_ORIGIN', 'http://localhost:3000');
+    const isProduction = process.env.NODE_ENV === 'production';
+    const defaultOrigins = isProduction
+        ? 'https://atria-erp.vercel.app'
+        : 'http://localhost:3000,http://127.0.0.1:3000';
+    const corsOrigin = configService.get('CORS_ORIGIN', defaultOrigins);
+    const allowedOrigins = new Set(corsOrigin
+        .split(',')
+        .map((origin) => origin
+        .trim()
+        .replace(/^["']|["']$/g, '')
+        .replace(/\/$/, ''))
+        .filter(Boolean));
+    if (!isProduction) {
+        allowedOrigins.add('http://localhost:3000');
+        allowedOrigins.add('http://127.0.0.1:3000');
+    }
     app.enableCors({
-        origin: corsOrigin.split(',').map((o) => o.trim()),
-        methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+        origin: (origin, callback) => {
+            if (!origin || allowedOrigins.has(origin)) {
+                callback(null, origin ?? true);
+                return;
+            }
+            console.warn(`[CORS] Blocked origin: ${origin}`);
+            callback(null, false);
+        },
+        methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+        allowedHeaders: [
+            'Content-Type',
+            'Authorization',
+            'X-Requested-With',
+            'Accept',
+            'Origin',
+        ],
         credentials: true,
+        optionsSuccessStatus: 204,
     });
+    if (!isProduction) {
+        console.log(`[CORS] Allowed origins: ${[...allowedOrigins].join(', ')}`);
+    }
     app.useGlobalPipes(new common_1.ValidationPipe({
         whitelist: true,
         forbidNonWhitelisted: true,
